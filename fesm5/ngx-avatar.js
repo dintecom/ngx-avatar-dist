@@ -866,17 +866,19 @@ var AvatarComponent = /** @class */ (function () {
     function (changes) {
         for (var propName in changes) {
             if (this.avatarService.isSource(propName)) {
+                /** @type {?} */
+                var sourceType = AvatarSource[propName.toUpperCase()];
                 if (changes[propName].currentValue) {
                     /** @type {?} */
                     var currentValue = changes[propName].currentValue;
-                    this.addSource(AvatarSource[propName.toUpperCase()], currentValue);
+                    this.addSource(sourceType, currentValue);
                 }
                 else {
-                    this.removeSource(AvatarSource[propName.toUpperCase()]);
+                    this.removeSource(sourceType);
                 }
             }
         }
-        // reintialize the avatar component when a source property value has changed
+        // reinitialize the avatar component when a source property value has changed
         // the fallback system must be re-invoked with the new values.
         this.initializeAvatar();
     };
@@ -1045,13 +1047,13 @@ var AvatarComponent = /** @class */ (function () {
         return __assign({ maxWidth: '100%', borderRadius: this.round ? '50%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', width: this.size, height: this.size }, this.style);
     };
     /**
-     * Fetch avatar image asynchrounsly.
+     * Fetch avatar image asynchronously.
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent
      */
     /**
-     * Fetch avatar image asynchrounsly.
+     * Fetch avatar image asynchronously.
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent
@@ -1059,7 +1061,7 @@ var AvatarComponent = /** @class */ (function () {
      * @return {?}
      */
     AvatarComponent.prototype.fetchAndProcessAsyncAvatar = /**
-     * Fetch avatar image asynchrounsly.
+     * Fetch avatar image asynchronously.
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent

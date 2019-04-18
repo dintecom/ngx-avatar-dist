@@ -84,7 +84,7 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
      */
     private getImageStyle;
     /**
-     * Fetch avatar image asynchrounsly.
+     * Fetch avatar image asynchronously.
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent
