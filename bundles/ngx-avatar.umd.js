@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('is-retina'), require('ts-md5/dist/md5'), require('@angular/common/http'), require('@angular/core'), require('rxjs/operators')) :
-    typeof define === 'function' && define.amd ? define('ngx-avatar', ['exports', '@angular/common', 'is-retina', 'ts-md5/dist/md5', '@angular/common/http', '@angular/core', 'rxjs/operators'], factory) :
-    (factory((global['ngx-avatar'] = {}),global.ng.common,global.isRetina,global.md5,global.ng.common.http,global.ng.core,global.rxjs.operators));
-}(this, (function (exports,common,isRetina,md5,http,core,operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('is-retina'), require('ts-md5/dist/md5'), require('@angular/common/http'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define('ngx-avatar', ['exports', '@angular/core', '@angular/common', 'is-retina', 'ts-md5/dist/md5', '@angular/common/http', 'rxjs/operators'], factory) :
+    (global = global || self, factory(global['ngx-avatar'] = {}, global.ng.core, global.ng.common, global.isRetina, global.md5, global.ng.common.http, global.rxjs.operators));
+}(this, function (exports, core, common, isRetina, md5, http, operators) { 'use strict';
 
     isRetina = isRetina && isRetina.hasOwnProperty('default') ? isRetina['default'] : isRetina;
 
@@ -21,55 +21,48 @@
     and limitations under the License.
     ***************************************************************************** */
     /* global Reflect, Promise */
-    var extendStatics = function (d, b) {
+
+    var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b)
-                if (b.hasOwnProperty(p))
-                    d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
+
     function __extends(d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
-    var __assign = function () {
+
+    var __assign = function() {
         __assign = Object.assign || function __assign(t) {
             for (var s, i = 1, n = arguments.length; i < n; i++) {
                 s = arguments[i];
-                for (var p in s)
-                    if (Object.prototype.hasOwnProperty.call(s, p))
-                        t[p] = s[p];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
             }
             return t;
         };
         return __assign.apply(this, arguments);
     };
+
     function __read(o, n) {
         var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m)
-            return o;
+        if (!m) return o;
         var i = m.call(o), r, ar = [], e;
         try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                ar.push(r.value);
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
         }
-        catch (error) {
-            e = { error: error };
-        }
+        catch (error) { e = { error: error }; }
         finally {
             try {
-                if (r && !r.done && (m = i["return"]))
-                    m.call(i);
+                if (r && !r.done && (m = i["return"])) m.call(i);
             }
-            finally {
-                if (e)
-                    throw e.error;
-            }
+            finally { if (e) throw e.error; }
         }
         return ar;
     }
+
     function __spread() {
         for (var ar = [], i = 0; i < arguments.length; i++)
             ar = ar.concat(__read(arguments[i]));
@@ -78,7 +71,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * Contract of all async sources.
@@ -89,7 +82,8 @@
      * Contract of all async sources.
      * Every async source must implement the processResponse method that extracts the avatar url from the data
      * @abstract
-     */ AsyncSource = /** @class */ (function () {
+     */
+    AsyncSource = /** @class */ (function () {
         function AsyncSource(sourceId) {
             this.sourceId = sourceId;
         }
@@ -98,7 +92,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /** @enum {string} */
     var AvatarSource = {
@@ -116,7 +110,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Facebook source impelementation.
@@ -127,7 +121,8 @@
      *  Facebook source impelementation.
      *  Fetch avatar source based on facebook identifier
      *  and image size
-     */ Facebook = /** @class */ (function () {
+     */
+    Facebook = /** @class */ (function () {
         function Facebook(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.FACEBOOK;
@@ -140,16 +135,16 @@
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                return ('https://graph.facebook.com/' +
-                    (this.sourceId + "/picture?width=" + size + "&height=" + size));
-            };
+        function (size) {
+            return ('https://graph.facebook.com/' +
+                (this.sourceId + "/picture?width=" + size + "&height=" + size));
+        };
         return Facebook;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Twitter source impelementation.
@@ -160,7 +155,8 @@
      *  Twitter source impelementation.
      *  Fetch avatar source based on google identifier
      *  and image size
-     */ Twitter = /** @class */ (function () {
+     */
+    Twitter = /** @class */ (function () {
         function Twitter(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.TWITTER;
@@ -173,37 +169,39 @@
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                /** @type {?} */
-                var twitterImgSize = this.getImageSize(size);
-                return "https://twitter.com/" + this.sourceId + "/profile_image?size=" + twitterImgSize;
-            };
+        function (size) {
+            /** @type {?} */
+            var twitterImgSize = this.getImageSize(size);
+            return "https://twitter.com/" + this.sourceId + "/profile_image?size=" + twitterImgSize;
+        };
         /**
+         * @private
          * @param {?} size
          * @return {?}
          */
         Twitter.prototype.getImageSize = /**
+         * @private
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                if (size <= 24) {
-                    return 'mini';
-                }
-                if (size <= 48) {
-                    return 'normal';
-                }
-                if (size <= 73) {
-                    return 'bigger';
-                }
-                return 'original';
-            };
+        function (size) {
+            if (size <= 24) {
+                return 'mini';
+            }
+            if (size <= 48) {
+                return 'normal';
+            }
+            if (size <= 73) {
+                return 'bigger';
+            }
+            return 'original';
+        };
         return Twitter;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Google source impelementation.
@@ -214,7 +212,8 @@
      *  Google source impelementation.
      *  Fetch avatar source based on google identifier
      *  and image size
-     */ Google = /** @class */ (function (_super) {
+     */
+    Google = /** @class */ (function (_super) {
         __extends(Google, _super);
         function Google(sourceId) {
             var _this = _super.call(this, sourceId) || this;
@@ -227,9 +226,9 @@
         Google.prototype.getAvatar = /**
          * @return {?}
          */
-            function () {
-                return "https://picasaweb.google.com/data/entry/api/user/" + this.sourceId + "?alt=json";
-            };
+        function () {
+            return "https://picasaweb.google.com/data/entry/api/user/" + this.sourceId + "?alt=json";
+        };
         /**
          * Extract google avatar from json data
          */
@@ -245,19 +244,19 @@
          * @param {?=} size
          * @return {?}
          */
-            function (data, size) {
-                /** @type {?} */
-                var avatarSrc = data.entry.gphoto$thumbnail.$t;
-                if (avatarSrc) {
-                    return avatarSrc.replace('s64', 's' + size);
-                }
-            };
+        function (data, size) {
+            /** @type {?} */
+            var avatarSrc = data.entry.gphoto$thumbnail.$t;
+            if (avatarSrc) {
+                return avatarSrc.replace('s64', 's' + size);
+            }
+        };
         return Google;
     }(AsyncSource));
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Custom source impelementation.
@@ -268,7 +267,8 @@
      *  Custom source impelementation.
      *  return custom image as an avatar
      *
-     */ Custom = /** @class */ (function () {
+     */
+    Custom = /** @class */ (function () {
         function Custom(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.CUSTOM;
@@ -279,15 +279,15 @@
         Custom.prototype.getAvatar = /**
          * @return {?}
          */
-            function () {
-                return this.sourceId;
-            };
+        function () {
+            return this.sourceId;
+        };
         return Custom;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * Initials source impelementation.
@@ -296,7 +296,8 @@
     var /**
      * Initials source impelementation.
      * return the initals of the given value
-     */ Initials = /** @class */ (function () {
+     */
+    Initials = /** @class */ (function () {
         function Initials(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.INITIALS;
@@ -309,66 +310,78 @@
          * @param {?} initialsSize
          * @return {?}
          */
-            function (initialsSize) {
-                return this.getInitials(this.sourceId, initialsSize);
-            };
+        function (initialsSize) {
+            return this.getInitials(this.sourceId, initialsSize);
+        };
         /**
          * Returns the initial letters of a name in a string.
          */
         /**
          * Returns the initial letters of a name in a string.
+         * @private
          * @param {?} name
          * @param {?} size
          * @return {?}
          */
         Initials.prototype.getInitials = /**
          * Returns the initial letters of a name in a string.
+         * @private
          * @param {?} name
          * @param {?} size
          * @return {?}
          */
-            function (name, size) {
-                name = name ? name.trim() : null;
-                if (!name) {
-                    return '';
-                }
-                /** @type {?} */
-                var initials = name.split(' ');
-                if (size && size < initials.length) {
-                    return this.constructInitials(initials.slice(0, size));
-                }
-                else {
-                    return this.constructInitials(initials);
-                }
-            };
+        function (name, size) {
+            name = name ? name.trim() : null;
+            if (!name) {
+                return '';
+            }
+            /** @type {?} */
+            var initials = name.split(' ');
+            if (size && size < initials.length) {
+                return this.constructInitials(initials.slice(0, size));
+            }
+            else {
+                return this.constructInitials(initials);
+            }
+        };
         /**
          * Iterates a person's name string to get the initials of each word in uppercase.
          */
         /**
          * Iterates a person's name string to get the initials of each word in uppercase.
+         * @private
          * @param {?} elements
          * @return {?}
          */
         Initials.prototype.constructInitials = /**
          * Iterates a person's name string to get the initials of each word in uppercase.
+         * @private
          * @param {?} elements
          * @return {?}
          */
-            function (elements) {
-                if (!elements || !elements.length) {
-                    return '';
-                }
-                return elements
-                    .filter(function (element) { return element && element.length > 0; })
-                    .map(function (element) { return element[0].toUpperCase(); })
-                    .join('');
-            };
+        function (elements) {
+            if (!elements || !elements.length) {
+                return '';
+            }
+            return elements
+                .filter((/**
+             * @param {?} element
+             * @return {?}
+             */
+            function (element) { return element && element.length > 0; }))
+                .map((/**
+             * @param {?} element
+             * @return {?}
+             */
+            function (element) { return element[0].toUpperCase(); }))
+                .join('');
+        };
         return Initials;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Gravatar source impelementation.
@@ -377,7 +390,8 @@
     var /**
      *  Gravatar source impelementation.
      *  Fetch avatar source based on gravatar email
-     */ Gravatar = /** @class */ (function () {
+     */
+    Gravatar = /** @class */ (function () {
         function Gravatar(value) {
             this.value = value;
             this.sourceType = AvatarSource.GRAVATAR;
@@ -393,17 +407,17 @@
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                /** @type {?} */
-                var avatarSize = isRetina() ? size * 2 : size;
-                return "https://secure.gravatar.com/avatar/" + this.sourceId + "?s=" + avatarSize + "&d=404";
-            };
+        function (size) {
+            /** @type {?} */
+            var avatarSize = isRetina() ? size * 2 : size;
+            return "https://secure.gravatar.com/avatar/" + this.sourceId + "?s=" + avatarSize + "&d=404";
+        };
         return Gravatar;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Skype source impelementation.
@@ -412,7 +426,8 @@
     var /**
      *  Skype source impelementation.
      *  Fetch avatar source based on skype identifier
-     */ Skype = /** @class */ (function () {
+     */
+    Skype = /** @class */ (function () {
         function Skype(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.SKYPE;
@@ -423,15 +438,15 @@
         Skype.prototype.getAvatar = /**
          * @return {?}
          */
-            function () {
-                return "https://api.skype.com/users/" + this.sourceId + "/profile/avatar";
-            };
+        function () {
+            return "https://api.skype.com/users/" + this.sourceId + "/profile/avatar";
+        };
         return Skype;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Value source impelementation.
@@ -440,7 +455,8 @@
     var /**
      *  Value source impelementation.
      *  return the value as avatar
-     */ Value = /** @class */ (function () {
+     */
+    Value = /** @class */ (function () {
         function Value(sourceId) {
             this.sourceId = sourceId;
             this.sourceType = AvatarSource.VALUE;
@@ -451,15 +467,15 @@
         Value.prototype.getAvatar = /**
          * @return {?}
          */
-            function () {
-                return this.sourceId;
-            };
+        function () {
+            return this.sourceId;
+        };
         return Value;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Vkontakte source impelementation.
@@ -483,11 +499,11 @@
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                /** @type {?} */
-                var imgSize = this.getImageSize(size);
-                return "https://api.vk.com/method/users.get?user_id=" + this.sourceId + "&v=" + apiVersion + "&fields=" + imgSize;
-            };
+        function (size) {
+            /** @type {?} */
+            var imgSize = this.getImageSize(size);
+            return "https://api.vk.com/method/users.get?user_id=" + this.sourceId + "&v=" + apiVersion + "&fields=" + imgSize;
+        };
         /**
          * extract vkontakte avatar from json data
          */
@@ -501,45 +517,47 @@
          * @param {?} data
          * @return {?}
          */
-            function (data) {
-                // avatar key property is the size used to generate avatar url
-                // size property is always the last key in the response object
-                /** @type {?} */
-                var sizeProperty = Object.keys(data['response'][0]).pop();
-                // return avatar src
-                return data['response'][0][sizeProperty];
-            };
+        function (data) {
+            // avatar key property is the size used to generate avatar url
+            // size property is always the last key in the response object
+            /** @type {?} */
+            var sizeProperty = Object.keys(data['response'][0]).pop();
+            // return avatar src
+            return data['response'][0][sizeProperty];
+        };
         /**
          * Returns image size related to vkontakte API
          */
         /**
          * Returns image size related to vkontakte API
+         * @private
          * @param {?} size
          * @return {?}
          */
         Vkontakte.prototype.getImageSize = /**
          * Returns image size related to vkontakte API
+         * @private
          * @param {?} size
          * @return {?}
          */
-            function (size) {
-                if (size <= 50) {
-                    return 'photo_50';
-                }
-                if (size <= 100) {
-                    return 'photo_100';
-                }
-                if (size <= 200) {
-                    return 'photo_200';
-                }
-                return 'photo_max';
-            };
+        function (size) {
+            if (size <= 50) {
+                return 'photo_50';
+            }
+            if (size <= 100) {
+                return 'photo_100';
+            }
+            if (size <= 200) {
+                return 'photo_200';
+            }
+            return 'photo_max';
+        };
         return Vkontakte;
     }(AsyncSource));
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      *  Github source impelementation.
@@ -548,7 +566,8 @@
     var /**
      *  Github source impelementation.
      *  Fetch avatar source based on github identifier
-     */ Github = /** @class */ (function (_super) {
+     */
+    Github = /** @class */ (function (_super) {
         __extends(Github, _super);
         function Github(sourceId) {
             var _this = _super.call(this, sourceId) || this;
@@ -561,9 +580,9 @@
         Github.prototype.getAvatar = /**
          * @return {?}
          */
-            function () {
-                return "https://api.github.com/users/" + this.sourceId;
-            };
+        function () {
+            return "https://api.github.com/users/" + this.sourceId;
+        };
         /**
          * extract github avatar from json data
          */
@@ -579,18 +598,18 @@
          * @param {?=} size
          * @return {?}
          */
-            function (data, size) {
-                if (size) {
-                    return data.avatar_url + "&s=" + size;
-                }
-                return data.avatar_url;
-            };
+        function (data, size) {
+            if (size) {
+                return data.avatar_url + "&s=" + size;
+            }
+            return data.avatar_url;
+        };
         return Github;
     }(AsyncSource));
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * Factory class that implements factory method pattern.
@@ -621,9 +640,9 @@
          * @param {?} sourceValue
          * @return {?}
          */
-            function (sourceType, sourceValue) {
-                return new this.sources[sourceType](sourceValue);
-            };
+        function (sourceType, sourceValue) {
+            return new this.sources[sourceType](sourceValue);
+        };
         SourceFactory.decorators = [
             { type: core.Injectable }
         ];
@@ -634,7 +653,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * Token used to inject the AvatarConfig object
@@ -644,7 +663,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var AvatarConfigService = /** @class */ (function () {
         function AvatarConfigService(userConfig) {
@@ -658,20 +677,28 @@
          * @param {?} defaultSources
          * @return {?}
          */
-            function (defaultSources) {
-                if (this.userConfig &&
-                    this.userConfig.sourcePriorityOrder &&
-                    this.userConfig.sourcePriorityOrder.length) {
-                    /** @type {?} */
-                    var uniqueSources = __spread(new Set(this.userConfig.sourcePriorityOrder));
-                    /** @type {?} */
-                    var validSources_1 = uniqueSources.filter(function (source) {
-                        return defaultSources.includes(source);
-                    });
-                    return __spread(validSources_1, defaultSources.filter(function (source) { return !validSources_1.includes(source); }));
-                }
-                return defaultSources;
-            };
+        function (defaultSources) {
+            if (this.userConfig &&
+                this.userConfig.sourcePriorityOrder &&
+                this.userConfig.sourcePriorityOrder.length) {
+                /** @type {?} */
+                var uniqueSources = __spread(new Set(this.userConfig.sourcePriorityOrder));
+                /** @type {?} */
+                var validSources_1 = uniqueSources.filter((/**
+                 * @param {?} source
+                 * @return {?}
+                 */
+                function (source) {
+                    return defaultSources.includes(source);
+                }));
+                return __spread(validSources_1, defaultSources.filter((/**
+                 * @param {?} source
+                 * @return {?}
+                 */
+                function (source) { return !validSources_1.includes(source); })));
+            }
+            return defaultSources;
+        };
         /**
          * @param {?} defaultColors
          * @return {?}
@@ -680,28 +707,26 @@
          * @param {?} defaultColors
          * @return {?}
          */
-            function (defaultColors) {
-                return ((this.userConfig &&
-                    this.userConfig.colors &&
-                    this.userConfig.colors.length &&
-                    this.userConfig.colors) ||
-                    defaultColors);
-            };
+        function (defaultColors) {
+            return ((this.userConfig &&
+                this.userConfig.colors &&
+                this.userConfig.colors.length &&
+                this.userConfig.colors) ||
+                defaultColors);
+        };
         AvatarConfigService.decorators = [
             { type: core.Injectable }
         ];
         /** @nocollapse */
-        AvatarConfigService.ctorParameters = function () {
-            return [
-                { type: undefined, decorators: [{ type: core.Optional }, { type: core.Inject, args: [AVATAR_CONFIG,] }] }
-            ];
-        };
+        AvatarConfigService.ctorParameters = function () { return [
+            { type: undefined, decorators: [{ type: core.Optional }, { type: core.Inject, args: [AVATAR_CONFIG,] }] }
+        ]; };
         return AvatarConfigService;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * list of Supported avatar sources
@@ -737,8 +762,8 @@
      * Provides utilities methods related to Avatar component
      */
     var AvatarService = /** @class */ (function () {
-        function AvatarService(http$$1, avatarConfigService) {
-            this.http = http$$1;
+        function AvatarService(http, avatarConfigService) {
+            this.http = http;
             this.avatarConfigService = avatarConfigService;
             this.avatarSources = defaultSources;
             this.avatarColors = defaultColors;
@@ -753,9 +778,9 @@
          * @param {?} avatarUrl
          * @return {?}
          */
-            function (avatarUrl) {
-                return this.http.get(avatarUrl);
-            };
+        function (avatarUrl) {
+            return this.http.get(avatarUrl);
+        };
         /**
          * @param {?} avatarText
          * @return {?}
@@ -764,14 +789,14 @@
          * @param {?} avatarText
          * @return {?}
          */
-            function (avatarText) {
-                if (!avatarText) {
-                    return 'transparent';
-                }
-                /** @type {?} */
-                var asciiCodeSum = this.calculateAsciiCode(avatarText);
-                return this.avatarColors[asciiCodeSum % this.avatarColors.length];
-            };
+        function (avatarText) {
+            if (!avatarText) {
+                return 'transparent';
+            }
+            /** @type {?} */
+            var asciiCodeSum = this.calculateAsciiCode(avatarText);
+            return this.avatarColors[asciiCodeSum % this.avatarColors.length];
+        };
         /**
          * @param {?} sourceType1
          * @param {?} sourceType2
@@ -782,9 +807,9 @@
          * @param {?} sourceType2
          * @return {?}
          */
-            function (sourceType1, sourceType2) {
-                return (this.getSourcePriority(sourceType1) - this.getSourcePriority(sourceType2));
-            };
+        function (sourceType1, sourceType2) {
+            return (this.getSourcePriority(sourceType1) - this.getSourcePriority(sourceType2));
+        };
         /**
          * @param {?} source
          * @return {?}
@@ -793,9 +818,9 @@
          * @param {?} source
          * @return {?}
          */
-            function (source) {
-                return this.avatarSources.includes(( /** @type {?} */(source)));
-            };
+        function (source) {
+            return this.avatarSources.includes((/** @type {?} */ (source)));
+        };
         /**
          * @param {?} sourceType
          * @return {?}
@@ -804,68 +829,83 @@
          * @param {?} sourceType
          * @return {?}
          */
-            function (sourceType) {
-                return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
-            };
+        function (sourceType) {
+            return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
+        };
         /**
+         * @private
          * @return {?}
          */
         AvatarService.prototype.overrideAvatarSources = /**
+         * @private
          * @return {?}
          */
-            function () {
-                this.avatarSources = this.avatarConfigService.getAvatarSources(defaultSources);
-            };
+        function () {
+            this.avatarSources = this.avatarConfigService.getAvatarSources(defaultSources);
+        };
         /**
+         * @private
          * @return {?}
          */
         AvatarService.prototype.overrideAvatarColors = /**
+         * @private
          * @return {?}
          */
-            function () {
-                this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
-            };
+        function () {
+            this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
+        };
         /**
+         * @private
          * @param {?} value
          * @return {?}
          */
         AvatarService.prototype.calculateAsciiCode = /**
+         * @private
          * @param {?} value
          * @return {?}
          */
-            function (value) {
-                return value
-                    .split('')
-                    .map(function (letter) { return letter.charCodeAt(0); })
-                    .reduce(function (previous, current) { return previous + current; });
-            };
+        function (value) {
+            return value
+                .split('')
+                .map((/**
+             * @param {?} letter
+             * @return {?}
+             */
+            function (letter) { return letter.charCodeAt(0); }))
+                .reduce((/**
+             * @param {?} previous
+             * @param {?} current
+             * @return {?}
+             */
+            function (previous, current) { return previous + current; }));
+        };
         /**
+         * @private
          * @param {?} sourceType
          * @return {?}
          */
         AvatarService.prototype.getSourcePriority = /**
+         * @private
          * @param {?} sourceType
          * @return {?}
          */
-            function (sourceType) {
-                return this.avatarSources.indexOf(sourceType);
-            };
+        function (sourceType) {
+            return this.avatarSources.indexOf(sourceType);
+        };
         AvatarService.decorators = [
             { type: core.Injectable }
         ];
         /** @nocollapse */
-        AvatarService.ctorParameters = function () {
-            return [
-                { type: http.HttpClient },
-                { type: AvatarConfigService }
-            ];
-        };
+        AvatarService.ctorParameters = function () { return [
+            { type: http.HttpClient },
+            { type: AvatarConfigService }
+        ]; };
         return AvatarService;
     }());
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
      * Universal avatar component that
@@ -899,9 +939,9 @@
         AvatarComponent.prototype.onAvatarClicked = /**
          * @return {?}
          */
-            function () {
-                this.clickOnAvatar.emit(this.sources[this.currentSource - 1]);
-            };
+        function () {
+            this.clickOnAvatar.emit(this.sources[this.currentSource - 1]);
+        };
         /**
          * Detect inputs change
          *
@@ -927,25 +967,25 @@
          * @param {?} changes
          * @return {?}
          */
-            function (changes) {
-                for (var propName in changes) {
-                    if (this.avatarService.isSource(propName)) {
+        function (changes) {
+            for (var propName in changes) {
+                if (this.avatarService.isSource(propName)) {
+                    /** @type {?} */
+                    var sourceType = AvatarSource[propName.toUpperCase()];
+                    if (changes[propName].currentValue) {
                         /** @type {?} */
-                        var sourceType = AvatarSource[propName.toUpperCase()];
-                        if (changes[propName].currentValue) {
-                            /** @type {?} */
-                            var currentValue = changes[propName].currentValue;
-                            this.addSource(sourceType, currentValue);
-                        }
-                        else {
-                            this.removeSource(sourceType);
-                        }
+                        var currentValue = changes[propName].currentValue;
+                        this.addSource(sourceType, currentValue);
+                    }
+                    else {
+                        this.removeSource(sourceType);
                     }
                 }
-                // reinitialize the avatar component when a source property value has changed
-                // the fallback system must be re-invoked with the new values.
-                this.initializeAvatar();
-            };
+            }
+            // reinitialize the avatar component when a source property value has changed
+            // the fallback system must be re-invoked with the new values.
+            this.initializeAvatar();
+        };
         /**
          * Fetch avatar source
          *
@@ -971,94 +1011,107 @@
          * @param {?=} event
          * @return {?}
          */
-            function (event) {
-                /** @type {?} */
-                var avatarSource = this.sources[this.currentSource];
-                if (!avatarSource) {
-                    return;
-                }
-                if (this.avatarService.isTextAvatar(avatarSource.sourceType)) {
-                    this.buildTextAvatar(avatarSource);
-                    // TODO: check if this is needed
-                    this.avatarSrc = undefined;
-                }
-                else {
-                    this.buildImageAvatar(avatarSource);
-                }
-                this.currentSource++;
-            };
+        function (event) {
+            /** @type {?} */
+            var avatarSource = this.sources[this.currentSource];
+            if (!avatarSource) {
+                return;
+            }
+            if (this.avatarService.isTextAvatar(avatarSource.sourceType)) {
+                this.buildTextAvatar(avatarSource);
+                // TODO: check if this is needed
+                this.avatarSrc = undefined;
+            }
+            else {
+                this.buildImageAvatar(avatarSource);
+            }
+            this.currentSource++;
+        };
         /**
          * @return {?}
          */
         AvatarComponent.prototype.ngOnDestroy = /**
          * @return {?}
          */
-            function () {
-                this.isAlive = false;
-            };
+        function () {
+            this.isAlive = false;
+        };
         /**
          * Initialize the avatar component and its fallback system
          */
         /**
          * Initialize the avatar component and its fallback system
+         * @private
          * @return {?}
          */
         AvatarComponent.prototype.initializeAvatar = /**
          * Initialize the avatar component and its fallback system
+         * @private
          * @return {?}
          */
-            function () {
-                this.currentSource = 0;
-                if (this.sources.length > 0 && this.sources[this.currentSource]) {
-                    this.sortAvatarSources();
-                    this.fetchAvatarSource();
-                    this.hostStyle = {
-                        width: this.size + 'px',
-                        height: this.size + 'px'
-                    };
-                }
-            };
+        function () {
+            this.currentSource = 0;
+            if (this.sources.length > 0 && this.sources[this.currentSource]) {
+                this.sortAvatarSources();
+                this.fetchAvatarSource();
+                this.hostStyle = {
+                    width: this.size + 'px',
+                    height: this.size + 'px'
+                };
+            }
+        };
         /**
+         * @private
          * @return {?}
          */
         AvatarComponent.prototype.sortAvatarSources = /**
+         * @private
          * @return {?}
          */
-            function () {
-                var _this = this;
-                this.sources.sort(function (source1, source2) {
-                    return _this.avatarService.copmareSources(source1.sourceType, source2.sourceType);
-                });
-            };
+        function () {
+            var _this = this;
+            this.sources.sort((/**
+             * @param {?} source1
+             * @param {?} source2
+             * @return {?}
+             */
+            function (source1, source2) {
+                return _this.avatarService.copmareSources(source1.sourceType, source2.sourceType);
+            }));
+        };
         /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
         AvatarComponent.prototype.buildTextAvatar = /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
-            function (avatarSource) {
-                this.avatarText = avatarSource.getAvatar(this.initialsSize);
-                this.avatarStyle = this.getInitialsStyle(avatarSource.sourceId);
-            };
+        function (avatarSource) {
+            this.avatarText = avatarSource.getAvatar(this.initialsSize);
+            this.avatarStyle = this.getInitialsStyle(avatarSource.sourceId);
+        };
         /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
         AvatarComponent.prototype.buildImageAvatar = /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
-            function (avatarSource) {
-                this.avatarStyle = this.getImageStyle();
-                if (avatarSource instanceof AsyncSource) {
-                    this.fetchAndProcessAsyncAvatar(avatarSource);
-                }
-                else {
-                    this.avatarSrc = avatarSource.getAvatar(this.size);
-                }
-            };
+        function (avatarSource) {
+            this.avatarStyle = this.getImageStyle();
+            if (avatarSource instanceof AsyncSource) {
+                this.fetchAndProcessAsyncAvatar(avatarSource);
+            }
+            else {
+                this.avatarSrc = avatarSource.getAvatar(this.size);
+            }
+        };
         /**
          *
          * returns initials style
@@ -1070,6 +1123,7 @@
          * returns initials style
          *
          * memberOf AvatarComponent
+         * @private
          * @param {?} avatarValue
          * @return {?}
          */
@@ -1078,15 +1132,16 @@
          * returns initials style
          *
          * memberOf AvatarComponent
+         * @private
          * @param {?} avatarValue
          * @return {?}
          */
-            function (avatarValue) {
-                return __assign({ textAlign: 'center', borderRadius: this.round ? '100%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', textTransform: 'uppercase', color: this.fgColor, backgroundColor: this.bgColor
-                        ? this.bgColor
-                        : this.avatarService.getRandomColor(avatarValue), font: Math.floor(this.size / this.textSizeRatio) +
-                        'px Helvetica, Arial, sans-serif', lineHeight: this.size + 'px' }, this.style);
-            };
+        function (avatarValue) {
+            return __assign({ textAlign: 'center', borderRadius: this.round ? '100%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', textTransform: 'uppercase', color: this.fgColor, backgroundColor: this.bgColor
+                    ? this.bgColor
+                    : this.avatarService.getRandomColor(avatarValue), font: Math.floor(this.size / this.textSizeRatio) +
+                    'px Helvetica, Arial, sans-serif', lineHeight: this.size + 'px' }, this.style);
+        };
         /**
          *
          * returns image style
@@ -1098,6 +1153,7 @@
          * returns image style
          *
          * memberOf AvatarComponent
+         * @private
          * @return {?}
          */
         AvatarComponent.prototype.getImageStyle = /**
@@ -1105,11 +1161,12 @@
          * returns image style
          *
          * memberOf AvatarComponent
+         * @private
          * @return {?}
          */
-            function () {
-                return __assign({ maxWidth: '100%', borderRadius: this.round ? '50%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', width: this.size, height: this.size }, this.style);
-            };
+        function () {
+            return __assign({ maxWidth: '100%', borderRadius: this.round ? '50%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', width: this.size, height: this.size }, this.style);
+        };
         /**
          * Fetch avatar image asynchronously.
          *
@@ -1121,6 +1178,7 @@
          *
          * param {Source} source represents avatar source
          * memberof AvatarComponent
+         * @private
          * @param {?} source
          * @return {?}
          */
@@ -1129,18 +1187,34 @@
          *
          * param {Source} source represents avatar source
          * memberof AvatarComponent
+         * @private
          * @param {?} source
          * @return {?}
          */
-            function (source) {
-                var _this = this;
-                this.avatarService
-                    .fetchAvatar(source.getAvatar())
-                    .pipe(operators.takeWhile(function () { return _this.isAlive; }), operators.map(function (response) { return source.processResponse(response, _this.size); }))
-                    .subscribe(function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }, function (err) {
-                    console.error("ngx-avatar: error while fetching " + source.sourceType + " avatar ");
-                });
-            };
+        function (source) {
+            var _this = this;
+            this.avatarService
+                .fetchAvatar(source.getAvatar())
+                .pipe(operators.takeWhile((/**
+             * @return {?}
+             */
+            function () { return _this.isAlive; })), operators.map((/**
+             * @param {?} response
+             * @return {?}
+             */
+            function (response) { return source.processResponse(response, _this.size); })))
+                .subscribe((/**
+             * @param {?} avatarSrc
+             * @return {?}
+             */
+            function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
+             * @param {?} err
+             * @return {?}
+             */
+            function (err) {
+                console.error("ngx-avatar: error while fetching " + source.sourceType + " avatar ");
+            }));
+        };
         /**
          * Add avatar source
          *
@@ -1152,6 +1226,7 @@
          *
          * param sourceType avatar source type e.g facebook,twitter, etc.
          * param sourceValue  source value e.g facebookId value, etc.
+         * @private
          * @param {?} sourceType
          * @param {?} sourceValue
          * @return {?}
@@ -1161,20 +1236,25 @@
          *
          * param sourceType avatar source type e.g facebook,twitter, etc.
          * param sourceValue  source value e.g facebookId value, etc.
+         * @private
          * @param {?} sourceType
          * @param {?} sourceValue
          * @return {?}
          */
-            function (sourceType, sourceValue) {
-                if (!this.isSourceExist(sourceType)) {
-                    this.sources.push(this.sourceFactory.newInstance(sourceType, sourceValue));
-                }
-                else {
-                    /** @type {?} */
-                    var index = this.sources.findIndex(function (source) { return source.sourceType === sourceType; });
-                    this.sources[index].sourceId = sourceValue;
-                }
-            };
+        function (sourceType, sourceValue) {
+            if (!this.isSourceExist(sourceType)) {
+                this.sources.push(this.sourceFactory.newInstance(sourceType, sourceValue));
+            }
+            else {
+                /** @type {?} */
+                var index = this.sources.findIndex((/**
+                 * @param {?} source
+                 * @return {?}
+                 */
+                function (source) { return source.sourceType === sourceType; }));
+                this.sources[index].sourceId = sourceValue;
+            }
+        };
         /**
          * Remove avatar source
          *
@@ -1184,6 +1264,7 @@
          * Remove avatar source
          *
          * param sourceType avatar source type e.g facebook,twitter, etc.
+         * @private
          * @param {?} sourceType
          * @return {?}
          */
@@ -1191,27 +1272,38 @@
          * Remove avatar source
          *
          * param sourceType avatar source type e.g facebook,twitter, etc.
+         * @private
          * @param {?} sourceType
          * @return {?}
          */
-            function (sourceType) {
-                if (this.isSourceExist(sourceType)) {
-                    /** @type {?} */
-                    var index = this.sources.findIndex(function (source) { return source.sourceType === sourceType; });
-                    this.sources.splice(index, 1);
-                }
-            };
+        function (sourceType) {
+            if (this.isSourceExist(sourceType)) {
+                /** @type {?} */
+                var index = this.sources.findIndex((/**
+                 * @param {?} source
+                 * @return {?}
+                 */
+                function (source) { return source.sourceType === sourceType; }));
+                this.sources.splice(index, 1);
+            }
+        };
         /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
         AvatarComponent.prototype.isSourceExist = /**
+         * @private
          * @param {?} avatarSource
          * @return {?}
          */
-            function (avatarSource) {
-                return this.sources.map(function (source) { return source.sourceType; }).includes(avatarSource);
-            };
+        function (avatarSource) {
+            return this.sources.map((/**
+             * @param {?} source
+             * @return {?}
+             */
+            function (source) { return source.sourceType; })).includes(avatarSource);
+        };
         AvatarComponent.decorators = [
             { type: core.Component, args: [{
                         // tslint:disable-next-line:component-selector
@@ -1221,13 +1313,11 @@
                     }] }
         ];
         /** @nocollapse */
-        AvatarComponent.ctorParameters = function () {
-            return [
-                { type: core.ElementRef },
-                { type: SourceFactory },
-                { type: AvatarService }
-            ];
-        };
+        AvatarComponent.ctorParameters = function () { return [
+            { type: core.ElementRef },
+            { type: SourceFactory },
+            { type: AvatarService }
+        ]; };
         AvatarComponent.propDecorators = {
             round: [{ type: core.Input }],
             size: [{ type: core.Input }],
@@ -1256,7 +1346,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var AvatarModule = /** @class */ (function () {
         function AvatarModule() {
@@ -1269,17 +1359,17 @@
          * @param {?=} avatarConfig
          * @return {?}
          */
-            function (avatarConfig) {
-                return {
-                    ngModule: AvatarModule,
-                    providers: [
-                        { provide: AVATAR_CONFIG, useValue: avatarConfig ? avatarConfig : {} }
-                    ]
-                };
+        function (avatarConfig) {
+            return {
+                ngModule: AvatarModule,
+                providers: [
+                    { provide: AVATAR_CONFIG, useValue: avatarConfig ? avatarConfig : {} }
+                ]
             };
+        };
         AvatarModule.decorators = [
             { type: core.NgModule, args: [{
-                        imports: [common.CommonModule, http.HttpClientModule],
+                        imports: [common.CommonModule],
                         declarations: [AvatarComponent],
                         providers: [SourceFactory, AvatarService, AvatarConfigService],
                         exports: [AvatarComponent]
@@ -1288,28 +1378,17 @@
         return AvatarModule;
     }());
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
-     */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
-     */
-
+    exports.AvatarComponent = AvatarComponent;
     exports.AvatarModule = AvatarModule;
-    exports.defaultSources = defaultSources;
-    exports.defaultColors = defaultColors;
     exports.AvatarService = AvatarService;
     exports.AvatarSource = AvatarSource;
-    exports.ɵc = AvatarConfigService;
-    exports.ɵd = AVATAR_CONFIG;
-    exports.ɵa = AvatarComponent;
-    exports.ɵb = SourceFactory;
+    exports.defaultColors = defaultColors;
+    exports.defaultSources = defaultSources;
+    exports.ɵa = SourceFactory;
+    exports.ɵb = AvatarConfigService;
+    exports.ɵc = AVATAR_CONFIG;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
-
+}));
 //# sourceMappingURL=ngx-avatar.umd.js.map

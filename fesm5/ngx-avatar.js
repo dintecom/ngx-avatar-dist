@@ -1,14 +1,14 @@
+import { Injectable, InjectionToken, Optional, Inject, Component, ElementRef, Input, Output, EventEmitter, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { __extends, __spread, __assign } from 'tslib';
 import isRetina from 'is-retina';
 import { Md5 } from 'ts-md5/dist/md5';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { __spread, __assign, __extends } from 'tslib';
-import { Injectable, InjectionToken, Inject, Optional, Component, Input, Output, EventEmitter, ElementRef, NgModule } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { takeWhile, map } from 'rxjs/operators';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Contract of all async sources.
@@ -29,7 +29,7 @@ AsyncSource = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @enum {string} */
 var AvatarSource = {
@@ -47,7 +47,7 @@ var AvatarSource = {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Facebook source impelementation.
@@ -81,7 +81,7 @@ Facebook = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Twitter source impelementation.
@@ -112,10 +112,12 @@ Twitter = /** @class */ (function () {
         return "https://twitter.com/" + this.sourceId + "/profile_image?size=" + twitterImgSize;
     };
     /**
+     * @private
      * @param {?} size
      * @return {?}
      */
     Twitter.prototype.getImageSize = /**
+     * @private
      * @param {?} size
      * @return {?}
      */
@@ -136,7 +138,7 @@ Twitter = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Google source impelementation.
@@ -191,7 +193,7 @@ Google = /** @class */ (function (_super) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Custom source impelementation.
@@ -222,7 +224,7 @@ Custom = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Initials source impelementation.
@@ -253,12 +255,14 @@ Initials = /** @class */ (function () {
      */
     /**
      * Returns the initial letters of a name in a string.
+     * @private
      * @param {?} name
      * @param {?} size
      * @return {?}
      */
     Initials.prototype.getInitials = /**
      * Returns the initial letters of a name in a string.
+     * @private
      * @param {?} name
      * @param {?} size
      * @return {?}
@@ -282,11 +286,13 @@ Initials = /** @class */ (function () {
      */
     /**
      * Iterates a person's name string to get the initials of each word in uppercase.
+     * @private
      * @param {?} elements
      * @return {?}
      */
     Initials.prototype.constructInitials = /**
      * Iterates a person's name string to get the initials of each word in uppercase.
+     * @private
      * @param {?} elements
      * @return {?}
      */
@@ -295,8 +301,16 @@ Initials = /** @class */ (function () {
             return '';
         }
         return elements
-            .filter(function (element) { return element && element.length > 0; })
-            .map(function (element) { return element[0].toUpperCase(); })
+            .filter((/**
+         * @param {?} element
+         * @return {?}
+         */
+        function (element) { return element && element.length > 0; }))
+            .map((/**
+         * @param {?} element
+         * @return {?}
+         */
+        function (element) { return element[0].toUpperCase(); }))
             .join('');
     };
     return Initials;
@@ -304,7 +318,7 @@ Initials = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Gravatar source impelementation.
@@ -340,7 +354,7 @@ Gravatar = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Skype source impelementation.
@@ -369,7 +383,7 @@ Skype = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Value source impelementation.
@@ -398,7 +412,7 @@ Value = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Vkontakte source impelementation.
@@ -453,11 +467,13 @@ var Vkontakte = /** @class */ (function (_super) {
      */
     /**
      * Returns image size related to vkontakte API
+     * @private
      * @param {?} size
      * @return {?}
      */
     Vkontakte.prototype.getImageSize = /**
      * Returns image size related to vkontakte API
+     * @private
      * @param {?} size
      * @return {?}
      */
@@ -478,7 +494,7 @@ var Vkontakte = /** @class */ (function (_super) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  *  Github source impelementation.
@@ -530,7 +546,7 @@ Github = /** @class */ (function (_super) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Factory class that implements factory method pattern.
@@ -574,7 +590,7 @@ var SourceFactory = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Token used to inject the AvatarConfig object
@@ -584,7 +600,7 @@ var AVATAR_CONFIG = new InjectionToken('avatar.config');
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var AvatarConfigService = /** @class */ (function () {
     function AvatarConfigService(userConfig) {
@@ -605,10 +621,18 @@ var AvatarConfigService = /** @class */ (function () {
             /** @type {?} */
             var uniqueSources = __spread(new Set(this.userConfig.sourcePriorityOrder));
             /** @type {?} */
-            var validSources_1 = uniqueSources.filter(function (source) {
+            var validSources_1 = uniqueSources.filter((/**
+             * @param {?} source
+             * @return {?}
+             */
+            function (source) {
                 return defaultSources.includes(source);
-            });
-            return __spread(validSources_1, defaultSources.filter(function (source) { return !validSources_1.includes(source); }));
+            }));
+            return __spread(validSources_1, defaultSources.filter((/**
+             * @param {?} source
+             * @return {?}
+             */
+            function (source) { return !validSources_1.includes(source); })));
         }
         return defaultSources;
     };
@@ -639,7 +663,7 @@ var AvatarConfigService = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * list of Supported avatar sources
@@ -746,42 +770,59 @@ var AvatarService = /** @class */ (function () {
         return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
     };
     /**
+     * @private
      * @return {?}
      */
     AvatarService.prototype.overrideAvatarSources = /**
+     * @private
      * @return {?}
      */
     function () {
         this.avatarSources = this.avatarConfigService.getAvatarSources(defaultSources);
     };
     /**
+     * @private
      * @return {?}
      */
     AvatarService.prototype.overrideAvatarColors = /**
+     * @private
      * @return {?}
      */
     function () {
         this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
     };
     /**
+     * @private
      * @param {?} value
      * @return {?}
      */
     AvatarService.prototype.calculateAsciiCode = /**
+     * @private
      * @param {?} value
      * @return {?}
      */
     function (value) {
         return value
             .split('')
-            .map(function (letter) { return letter.charCodeAt(0); })
-            .reduce(function (previous, current) { return previous + current; });
+            .map((/**
+         * @param {?} letter
+         * @return {?}
+         */
+        function (letter) { return letter.charCodeAt(0); }))
+            .reduce((/**
+         * @param {?} previous
+         * @param {?} current
+         * @return {?}
+         */
+        function (previous, current) { return previous + current; }));
     };
     /**
+     * @private
      * @param {?} sourceType
      * @return {?}
      */
     AvatarService.prototype.getSourcePriority = /**
+     * @private
      * @param {?} sourceType
      * @return {?}
      */
@@ -801,7 +842,7 @@ var AvatarService = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Universal avatar component that
@@ -937,10 +978,12 @@ var AvatarComponent = /** @class */ (function () {
      */
     /**
      * Initialize the avatar component and its fallback system
+     * @private
      * @return {?}
      */
     AvatarComponent.prototype.initializeAvatar = /**
      * Initialize the avatar component and its fallback system
+     * @private
      * @return {?}
      */
     function () {
@@ -955,22 +998,31 @@ var AvatarComponent = /** @class */ (function () {
         }
     };
     /**
+     * @private
      * @return {?}
      */
     AvatarComponent.prototype.sortAvatarSources = /**
+     * @private
      * @return {?}
      */
     function () {
         var _this = this;
-        this.sources.sort(function (source1, source2) {
+        this.sources.sort((/**
+         * @param {?} source1
+         * @param {?} source2
+         * @return {?}
+         */
+        function (source1, source2) {
             return _this.avatarService.copmareSources(source1.sourceType, source2.sourceType);
-        });
+        }));
     };
     /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
     AvatarComponent.prototype.buildTextAvatar = /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
@@ -979,10 +1031,12 @@ var AvatarComponent = /** @class */ (function () {
         this.avatarStyle = this.getInitialsStyle(avatarSource.sourceId);
     };
     /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
     AvatarComponent.prototype.buildImageAvatar = /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
@@ -1006,6 +1060,7 @@ var AvatarComponent = /** @class */ (function () {
      * returns initials style
      *
      * memberOf AvatarComponent
+     * @private
      * @param {?} avatarValue
      * @return {?}
      */
@@ -1014,6 +1069,7 @@ var AvatarComponent = /** @class */ (function () {
      * returns initials style
      *
      * memberOf AvatarComponent
+     * @private
      * @param {?} avatarValue
      * @return {?}
      */
@@ -1034,6 +1090,7 @@ var AvatarComponent = /** @class */ (function () {
      * returns image style
      *
      * memberOf AvatarComponent
+     * @private
      * @return {?}
      */
     AvatarComponent.prototype.getImageStyle = /**
@@ -1041,6 +1098,7 @@ var AvatarComponent = /** @class */ (function () {
      * returns image style
      *
      * memberOf AvatarComponent
+     * @private
      * @return {?}
      */
     function () {
@@ -1057,6 +1115,7 @@ var AvatarComponent = /** @class */ (function () {
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent
+     * @private
      * @param {?} source
      * @return {?}
      */
@@ -1065,6 +1124,7 @@ var AvatarComponent = /** @class */ (function () {
      *
      * param {Source} source represents avatar source
      * memberof AvatarComponent
+     * @private
      * @param {?} source
      * @return {?}
      */
@@ -1072,10 +1132,25 @@ var AvatarComponent = /** @class */ (function () {
         var _this = this;
         this.avatarService
             .fetchAvatar(source.getAvatar())
-            .pipe(takeWhile(function () { return _this.isAlive; }), map(function (response) { return source.processResponse(response, _this.size); }))
-            .subscribe(function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }, function (err) {
+            .pipe(takeWhile((/**
+         * @return {?}
+         */
+        function () { return _this.isAlive; })), map((/**
+         * @param {?} response
+         * @return {?}
+         */
+        function (response) { return source.processResponse(response, _this.size); })))
+            .subscribe((/**
+         * @param {?} avatarSrc
+         * @return {?}
+         */
+        function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
+         * @param {?} err
+         * @return {?}
+         */
+        function (err) {
             console.error("ngx-avatar: error while fetching " + source.sourceType + " avatar ");
-        });
+        }));
     };
     /**
      * Add avatar source
@@ -1088,6 +1163,7 @@ var AvatarComponent = /** @class */ (function () {
      *
      * param sourceType avatar source type e.g facebook,twitter, etc.
      * param sourceValue  source value e.g facebookId value, etc.
+     * @private
      * @param {?} sourceType
      * @param {?} sourceValue
      * @return {?}
@@ -1097,6 +1173,7 @@ var AvatarComponent = /** @class */ (function () {
      *
      * param sourceType avatar source type e.g facebook,twitter, etc.
      * param sourceValue  source value e.g facebookId value, etc.
+     * @private
      * @param {?} sourceType
      * @param {?} sourceValue
      * @return {?}
@@ -1107,7 +1184,11 @@ var AvatarComponent = /** @class */ (function () {
         }
         else {
             /** @type {?} */
-            var index = this.sources.findIndex(function (source) { return source.sourceType === sourceType; });
+            var index = this.sources.findIndex((/**
+             * @param {?} source
+             * @return {?}
+             */
+            function (source) { return source.sourceType === sourceType; }));
             this.sources[index].sourceId = sourceValue;
         }
     };
@@ -1120,6 +1201,7 @@ var AvatarComponent = /** @class */ (function () {
      * Remove avatar source
      *
      * param sourceType avatar source type e.g facebook,twitter, etc.
+     * @private
      * @param {?} sourceType
      * @return {?}
      */
@@ -1127,26 +1209,37 @@ var AvatarComponent = /** @class */ (function () {
      * Remove avatar source
      *
      * param sourceType avatar source type e.g facebook,twitter, etc.
+     * @private
      * @param {?} sourceType
      * @return {?}
      */
     function (sourceType) {
         if (this.isSourceExist(sourceType)) {
             /** @type {?} */
-            var index = this.sources.findIndex(function (source) { return source.sourceType === sourceType; });
+            var index = this.sources.findIndex((/**
+             * @param {?} source
+             * @return {?}
+             */
+            function (source) { return source.sourceType === sourceType; }));
             this.sources.splice(index, 1);
         }
     };
     /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
     AvatarComponent.prototype.isSourceExist = /**
+     * @private
      * @param {?} avatarSource
      * @return {?}
      */
     function (avatarSource) {
-        return this.sources.map(function (source) { return source.sourceType; }).includes(avatarSource);
+        return this.sources.map((/**
+         * @param {?} source
+         * @return {?}
+         */
+        function (source) { return source.sourceType; })).includes(avatarSource);
     };
     AvatarComponent.decorators = [
         { type: Component, args: [{
@@ -1190,7 +1283,7 @@ var AvatarComponent = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var AvatarModule = /** @class */ (function () {
     function AvatarModule() {
@@ -1213,7 +1306,7 @@ var AvatarModule = /** @class */ (function () {
     };
     AvatarModule.decorators = [
         { type: NgModule, args: [{
-                    imports: [CommonModule, HttpClientModule],
+                    imports: [CommonModule],
                     declarations: [AvatarComponent],
                     providers: [SourceFactory, AvatarService, AvatarConfigService],
                     exports: [AvatarComponent]
@@ -1224,19 +1317,18 @@ var AvatarModule = /** @class */ (function () {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AvatarModule, defaultSources, defaultColors, AvatarService, AvatarSource, AvatarConfigService as ɵc, AVATAR_CONFIG as ɵd, AvatarComponent as ɵa, SourceFactory as ɵb };
-
+export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultColors, defaultSources, SourceFactory as ɵa, AvatarConfigService as ɵb, AVATAR_CONFIG as ɵc };
 //# sourceMappingURL=ngx-avatar.js.map
