@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import isRetina from 'is-retina';
 import { Md5 } from 'ts-md5/dist/md5';
 import { HttpClient } from '@angular/common/http';
-import { takeWhile, map } from 'rxjs/operators';
+import { throwError, of } from 'rxjs';
+import { tap, catchError, finalize, share, takeWhile, map } from 'rxjs/operators';
 
 /**
  * @fileoverview added by tsickle
@@ -517,6 +518,16 @@ class AvatarConfigService {
             this.userConfig.colors) ||
             defaultColors);
     }
+    /**
+     * @param {?} defaultLifetime
+     * @return {?}
+     */
+    getCacheLifetime(defaultLifetime) {
+        return ((this.userConfig &&
+            isFinite(this.userConfig.cacheLifetimeSecond) &&
+            this.userConfig.cacheLifetimeSecond) ||
+            defaultLifetime);
+    }
 }
 AvatarConfigService.decorators = [
     { type: Injectable }
@@ -561,6 +572,11 @@ const defaultColors = [
     '#7f8c8d'
 ];
 /**
+ * Default request cache lifetime
+ * @type {?}
+ */
+const defaultCacheLifetimeSecond = 30 * 60;
+/**
  * Provides utilities methods related to Avatar component
  */
 class AvatarService {
@@ -573,16 +589,56 @@ class AvatarService {
         this.avatarConfigService = avatarConfigService;
         this.avatarSources = defaultSources;
         this.avatarColors = defaultColors;
-        this.cache = [];
+        this.cacheLifetimeSecond = defaultCacheLifetimeSecond;
+        this.cache = {};
+        this.requestCache = {};
         this.overrideAvatarSources();
         this.overrideAvatarColors();
+        this.overrideCacheLifetime();
     }
     /**
      * @param {?} avatarUrl
      * @return {?}
      */
     fetchAvatar(avatarUrl) {
-        return this.http.get(avatarUrl);
+        if (this.cache[avatarUrl]) {
+            return this.cache[avatarUrl].error
+                ? throwError(this.cache[avatarUrl].error)
+                : of(this.cache[avatarUrl].avatar);
+        }
+        if (this.requestCache[avatarUrl])
+            return this.requestCache[avatarUrl];
+        this.requestCache[avatarUrl] = this.http
+            .get(avatarUrl)
+            .pipe(tap((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => {
+            delete this.requestCache[avatarUrl];
+            this.cache[avatarUrl] = {
+                avatar: a,
+            };
+        })), catchError((/**
+         * @param {?} e
+         * @return {?}
+         */
+        e => {
+            delete this.requestCache[avatarUrl];
+            this.cache[avatarUrl] = {
+                error: e,
+            };
+            return throwError(e);
+        })), finalize((/**
+         * @return {?}
+         */
+        () => {
+            setTimeout((/**
+             * @return {?}
+             */
+            () => delete this.cache[avatarUrl]), this.cacheLifetimeSecond * 1000);
+        })), share());
+        return this.requestCache[avatarUrl];
     }
     /**
      * @param {?} avatarText
@@ -619,20 +675,6 @@ class AvatarService {
         return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
     }
     /**
-     * @param {?} source
-     * @return {?}
-     */
-    fetchAvatarHasFailedBefore(source) {
-        return this.cache.includes(source);
-    }
-    /**
-     * @param {?} source
-     * @return {?}
-     */
-    cacheFailedAvatar(source) {
-        this.cache.push(source);
-    }
-    /**
      * @private
      * @return {?}
      */
@@ -645,6 +687,13 @@ class AvatarService {
      */
     overrideAvatarColors() {
         this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
+    }
+    /**
+     * @private
+     * @return {?}
+     */
+    overrideCacheLifetime() {
+        this.cacheLifetimeSecond = this.avatarConfigService.getCacheLifetime(defaultCacheLifetimeSecond);
     }
     /**
      * @private
@@ -871,29 +920,21 @@ class AvatarComponent {
      * @return {?}
      */
     fetchAndProcessAsyncAvatar(source) {
-        if (!this.avatarService.fetchAvatarHasFailedBefore(source.sourceType)) {
-            this.avatarService
-                .fetchAvatar(source.getAvatar())
-                .pipe(takeWhile((/**
-             * @return {?}
-             */
-            () => this.isAlive)), map((/**
-             * @param {?} response
-             * @return {?}
-             */
-            response => source.processResponse(response, this.size))))
-                .subscribe((/**
-             * @param {?} avatarSrc
-             * @return {?}
-             */
-            avatarSrc => (this.avatarSrc = avatarSrc)), (/**
-             * @param {?} err
-             * @return {?}
-             */
-            err => {
-                this.avatarService.cacheFailedAvatar(source.sourceType);
-            }));
-        }
+        this.avatarService
+            .fetchAvatar(source.getAvatar())
+            .pipe(takeWhile((/**
+         * @return {?}
+         */
+        () => this.isAlive)), map((/**
+         * @param {?} response
+         * @return {?}
+         */
+        response => source.processResponse(response, this.size))))
+            .subscribe((/**
+         * @param {?} avatarSrc
+         * @return {?}
+         */
+        avatarSrc => (this.avatarSrc = avatarSrc)));
     }
     /**
      * Add avatar source
@@ -1056,5 +1097,5 @@ AvatarModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultColors, defaultSources, SourceFactory as ɵa, AvatarConfigService as ɵb, AVATAR_CONFIG as ɵc };
+export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultCacheLifetimeSecond, defaultColors, defaultSources, SourceFactory as ɵa, AvatarConfigService as ɵb, AVATAR_CONFIG as ɵc };
 //# sourceMappingURL=ngx-avatar.js.map

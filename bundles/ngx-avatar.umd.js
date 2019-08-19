@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('is-retina'), require('ts-md5/dist/md5'), require('@angular/common/http'), require('rxjs/operators')) :
-    typeof define === 'function' && define.amd ? define('ngx-avatar', ['exports', '@angular/core', '@angular/common', 'is-retina', 'ts-md5/dist/md5', '@angular/common/http', 'rxjs/operators'], factory) :
-    (global = global || self, factory(global['ngx-avatar'] = {}, global.ng.core, global.ng.common, global.isRetina, global.md5, global.ng.common.http, global.rxjs.operators));
-}(this, function (exports, core, common, isRetina, md5, http, operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('is-retina'), require('ts-md5/dist/md5'), require('@angular/common/http'), require('rxjs'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define('ngx-avatar', ['exports', '@angular/core', '@angular/common', 'is-retina', 'ts-md5/dist/md5', '@angular/common/http', 'rxjs', 'rxjs/operators'], factory) :
+    (global = global || self, factory(global['ngx-avatar'] = {}, global.ng.core, global.ng.common, global.isRetina, global.md5, global.ng.common.http, global.rxjs, global.rxjs.operators));
+}(this, function (exports, core, common, isRetina, md5, http, rxjs, operators) { 'use strict';
 
     isRetina = isRetina && isRetina.hasOwnProperty('default') ? isRetina['default'] : isRetina;
 
@@ -714,6 +714,20 @@
                 this.userConfig.colors) ||
                 defaultColors);
         };
+        /**
+         * @param {?} defaultLifetime
+         * @return {?}
+         */
+        AvatarConfigService.prototype.getCacheLifetime = /**
+         * @param {?} defaultLifetime
+         * @return {?}
+         */
+        function (defaultLifetime) {
+            return ((this.userConfig &&
+                isFinite(this.userConfig.cacheLifetimeSecond) &&
+                this.userConfig.cacheLifetimeSecond) ||
+                defaultLifetime);
+        };
         AvatarConfigService.decorators = [
             { type: core.Injectable }
         ];
@@ -759,6 +773,11 @@
         '#7f8c8d'
     ];
     /**
+     * Default request cache lifetime
+     * @type {?}
+     */
+    var defaultCacheLifetimeSecond = 30 * 60;
+    /**
      * Provides utilities methods related to Avatar component
      */
     var AvatarService = /** @class */ (function () {
@@ -767,9 +786,12 @@
             this.avatarConfigService = avatarConfigService;
             this.avatarSources = defaultSources;
             this.avatarColors = defaultColors;
-            this.cache = [];
+            this.cacheLifetimeSecond = defaultCacheLifetimeSecond;
+            this.cache = {};
+            this.requestCache = {};
             this.overrideAvatarSources();
             this.overrideAvatarColors();
+            this.overrideCacheLifetime();
         }
         /**
          * @param {?} avatarUrl
@@ -780,7 +802,45 @@
          * @return {?}
          */
         function (avatarUrl) {
-            return this.http.get(avatarUrl);
+            var _this = this;
+            if (this.cache[avatarUrl]) {
+                return this.cache[avatarUrl].error
+                    ? rxjs.throwError(this.cache[avatarUrl].error)
+                    : rxjs.of(this.cache[avatarUrl].avatar);
+            }
+            if (this.requestCache[avatarUrl])
+                return this.requestCache[avatarUrl];
+            this.requestCache[avatarUrl] = this.http
+                .get(avatarUrl)
+                .pipe(operators.tap((/**
+             * @param {?} a
+             * @return {?}
+             */
+            function (a) {
+                delete _this.requestCache[avatarUrl];
+                _this.cache[avatarUrl] = {
+                    avatar: a,
+                };
+            })), operators.catchError((/**
+             * @param {?} e
+             * @return {?}
+             */
+            function (e) {
+                delete _this.requestCache[avatarUrl];
+                _this.cache[avatarUrl] = {
+                    error: e,
+                };
+                return rxjs.throwError(e);
+            })), operators.finalize((/**
+             * @return {?}
+             */
+            function () {
+                setTimeout((/**
+                 * @return {?}
+                 */
+                function () { return delete _this.cache[avatarUrl]; }), _this.cacheLifetimeSecond * 1000);
+            })), operators.share());
+            return this.requestCache[avatarUrl];
         };
         /**
          * @param {?} avatarText
@@ -834,28 +894,6 @@
             return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
         };
         /**
-         * @param {?} source
-         * @return {?}
-         */
-        AvatarService.prototype.fetchAvatarHasFailedBefore = /**
-         * @param {?} source
-         * @return {?}
-         */
-        function (source) {
-            return this.cache.includes(source);
-        };
-        /**
-         * @param {?} source
-         * @return {?}
-         */
-        AvatarService.prototype.cacheFailedAvatar = /**
-         * @param {?} source
-         * @return {?}
-         */
-        function (source) {
-            this.cache.push(source);
-        };
-        /**
          * @private
          * @return {?}
          */
@@ -876,6 +914,17 @@
          */
         function () {
             this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
+        };
+        /**
+         * @private
+         * @return {?}
+         */
+        AvatarService.prototype.overrideCacheLifetime = /**
+         * @private
+         * @return {?}
+         */
+        function () {
+            this.cacheLifetimeSecond = this.avatarConfigService.getCacheLifetime(defaultCacheLifetimeSecond);
         };
         /**
          * @private
@@ -1216,29 +1265,21 @@
          */
         function (source) {
             var _this = this;
-            if (!this.avatarService.fetchAvatarHasFailedBefore(source.sourceType)) {
-                this.avatarService
-                    .fetchAvatar(source.getAvatar())
-                    .pipe(operators.takeWhile((/**
-                 * @return {?}
-                 */
-                function () { return _this.isAlive; })), operators.map((/**
-                 * @param {?} response
-                 * @return {?}
-                 */
-                function (response) { return source.processResponse(response, _this.size); })))
-                    .subscribe((/**
-                 * @param {?} avatarSrc
-                 * @return {?}
-                 */
-                function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
-                 * @param {?} err
-                 * @return {?}
-                 */
-                function (err) {
-                    _this.avatarService.cacheFailedAvatar(source.sourceType);
-                }));
-            }
+            this.avatarService
+                .fetchAvatar(source.getAvatar())
+                .pipe(operators.takeWhile((/**
+             * @return {?}
+             */
+            function () { return _this.isAlive; })), operators.map((/**
+             * @param {?} response
+             * @return {?}
+             */
+            function (response) { return source.processResponse(response, _this.size); })))
+                .subscribe((/**
+             * @param {?} avatarSrc
+             * @return {?}
+             */
+            function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }));
         };
         /**
          * Add avatar source
@@ -1407,6 +1448,7 @@
     exports.AvatarModule = AvatarModule;
     exports.AvatarService = AvatarService;
     exports.AvatarSource = AvatarSource;
+    exports.defaultCacheLifetimeSecond = defaultCacheLifetimeSecond;
     exports.defaultColors = defaultColors;
     exports.defaultSources = defaultSources;
     exports.ɵa = SourceFactory;

@@ -4,7 +4,8 @@ import { __extends, __spread, __assign } from 'tslib';
 import isRetina from 'is-retina';
 import { Md5 } from 'ts-md5/dist/md5';
 import { HttpClient } from '@angular/common/http';
-import { takeWhile, map } from 'rxjs/operators';
+import { throwError, of } from 'rxjs';
+import { tap, catchError, finalize, share, takeWhile, map } from 'rxjs/operators';
 
 /**
  * @fileoverview added by tsickle
@@ -651,6 +652,20 @@ var AvatarConfigService = /** @class */ (function () {
             this.userConfig.colors) ||
             defaultColors);
     };
+    /**
+     * @param {?} defaultLifetime
+     * @return {?}
+     */
+    AvatarConfigService.prototype.getCacheLifetime = /**
+     * @param {?} defaultLifetime
+     * @return {?}
+     */
+    function (defaultLifetime) {
+        return ((this.userConfig &&
+            isFinite(this.userConfig.cacheLifetimeSecond) &&
+            this.userConfig.cacheLifetimeSecond) ||
+            defaultLifetime);
+    };
     AvatarConfigService.decorators = [
         { type: Injectable }
     ];
@@ -696,6 +711,11 @@ var defaultColors = [
     '#7f8c8d'
 ];
 /**
+ * Default request cache lifetime
+ * @type {?}
+ */
+var defaultCacheLifetimeSecond = 30 * 60;
+/**
  * Provides utilities methods related to Avatar component
  */
 var AvatarService = /** @class */ (function () {
@@ -704,9 +724,12 @@ var AvatarService = /** @class */ (function () {
         this.avatarConfigService = avatarConfigService;
         this.avatarSources = defaultSources;
         this.avatarColors = defaultColors;
-        this.cache = [];
+        this.cacheLifetimeSecond = defaultCacheLifetimeSecond;
+        this.cache = {};
+        this.requestCache = {};
         this.overrideAvatarSources();
         this.overrideAvatarColors();
+        this.overrideCacheLifetime();
     }
     /**
      * @param {?} avatarUrl
@@ -717,7 +740,45 @@ var AvatarService = /** @class */ (function () {
      * @return {?}
      */
     function (avatarUrl) {
-        return this.http.get(avatarUrl);
+        var _this = this;
+        if (this.cache[avatarUrl]) {
+            return this.cache[avatarUrl].error
+                ? throwError(this.cache[avatarUrl].error)
+                : of(this.cache[avatarUrl].avatar);
+        }
+        if (this.requestCache[avatarUrl])
+            return this.requestCache[avatarUrl];
+        this.requestCache[avatarUrl] = this.http
+            .get(avatarUrl)
+            .pipe(tap((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) {
+            delete _this.requestCache[avatarUrl];
+            _this.cache[avatarUrl] = {
+                avatar: a,
+            };
+        })), catchError((/**
+         * @param {?} e
+         * @return {?}
+         */
+        function (e) {
+            delete _this.requestCache[avatarUrl];
+            _this.cache[avatarUrl] = {
+                error: e,
+            };
+            return throwError(e);
+        })), finalize((/**
+         * @return {?}
+         */
+        function () {
+            setTimeout((/**
+             * @return {?}
+             */
+            function () { return delete _this.cache[avatarUrl]; }), _this.cacheLifetimeSecond * 1000);
+        })), share());
+        return this.requestCache[avatarUrl];
     };
     /**
      * @param {?} avatarText
@@ -771,28 +832,6 @@ var AvatarService = /** @class */ (function () {
         return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
     };
     /**
-     * @param {?} source
-     * @return {?}
-     */
-    AvatarService.prototype.fetchAvatarHasFailedBefore = /**
-     * @param {?} source
-     * @return {?}
-     */
-    function (source) {
-        return this.cache.includes(source);
-    };
-    /**
-     * @param {?} source
-     * @return {?}
-     */
-    AvatarService.prototype.cacheFailedAvatar = /**
-     * @param {?} source
-     * @return {?}
-     */
-    function (source) {
-        this.cache.push(source);
-    };
-    /**
      * @private
      * @return {?}
      */
@@ -813,6 +852,17 @@ var AvatarService = /** @class */ (function () {
      */
     function () {
         this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
+    };
+    /**
+     * @private
+     * @return {?}
+     */
+    AvatarService.prototype.overrideCacheLifetime = /**
+     * @private
+     * @return {?}
+     */
+    function () {
+        this.cacheLifetimeSecond = this.avatarConfigService.getCacheLifetime(defaultCacheLifetimeSecond);
     };
     /**
      * @private
@@ -1153,29 +1203,21 @@ var AvatarComponent = /** @class */ (function () {
      */
     function (source) {
         var _this = this;
-        if (!this.avatarService.fetchAvatarHasFailedBefore(source.sourceType)) {
-            this.avatarService
-                .fetchAvatar(source.getAvatar())
-                .pipe(takeWhile((/**
-             * @return {?}
-             */
-            function () { return _this.isAlive; })), map((/**
-             * @param {?} response
-             * @return {?}
-             */
-            function (response) { return source.processResponse(response, _this.size); })))
-                .subscribe((/**
-             * @param {?} avatarSrc
-             * @return {?}
-             */
-            function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
-             * @param {?} err
-             * @return {?}
-             */
-            function (err) {
-                _this.avatarService.cacheFailedAvatar(source.sourceType);
-            }));
-        }
+        this.avatarService
+            .fetchAvatar(source.getAvatar())
+            .pipe(takeWhile((/**
+         * @return {?}
+         */
+        function () { return _this.isAlive; })), map((/**
+         * @param {?} response
+         * @return {?}
+         */
+        function (response) { return source.processResponse(response, _this.size); })))
+            .subscribe((/**
+         * @param {?} avatarSrc
+         * @return {?}
+         */
+        function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }));
     };
     /**
      * Add avatar source
@@ -1355,5 +1397,5 @@ var AvatarModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultColors, defaultSources, SourceFactory as ɵa, AvatarConfigService as ɵb, AVATAR_CONFIG as ɵc };
+export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultCacheLifetimeSecond, defaultColors, defaultSources, SourceFactory as ɵa, AvatarConfigService as ɵb, AVATAR_CONFIG as ɵc };
 //# sourceMappingURL=ngx-avatar.js.map

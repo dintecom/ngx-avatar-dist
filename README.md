@@ -158,6 +158,7 @@ All you need to do is to configure the AvatarModule by calling **forRoot** metho
 AvatarConfig interface has two properties: 
   * **avatarColors:** allows the user to override the default avatar colors by providing a new set of colors
   * **sourcePriorityOrder:** allows the user to change the avatar source priority order. If you want the avatar component to look for user initials first, twitter before facebook or any order you want, this is can be done using the sourcePriorityOrder property
+  * **cacheLifetimeSecond:** allows the user to change the avatar services request cache lifetime
 
 The following code shows an example on how to import the AvatarModule with your own source priority order. 
 With the given order, the avatar component will look first for the custom avatar image and then for user initials and after that it will look the rest of sources.

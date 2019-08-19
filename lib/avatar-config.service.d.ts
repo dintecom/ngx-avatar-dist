@@ -5,4 +5,5 @@ export declare class AvatarConfigService {
     constructor(userConfig: AvatarConfig);
     getAvatarSources(defaultSources: AvatarSource[]): AvatarSource[];
     getAvatarColors(defaultColors: string[]): string[];
+    getCacheLifetime(defaultLifetime: number): number;
 }
