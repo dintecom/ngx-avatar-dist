@@ -18,12 +18,15 @@ export declare class AvatarService {
     private avatarConfigService;
     avatarSources: AvatarSource[];
     avatarColors: string[];
+    private cache;
     constructor(http: HttpClient, avatarConfigService: AvatarConfigService);
     fetchAvatar(avatarUrl: string): Observable<any>;
     getRandomColor(avatarText: string): string;
     copmareSources(sourceType1: AvatarSource, sourceType2: AvatarSource): number;
     isSource(source: string): boolean;
     isTextAvatar(sourceType: AvatarSource): boolean;
+    fetchAvatarHasFailedBefore(source: AvatarSource): boolean;
+    cacheFailedAvatar(source: AvatarSource): void;
     private overrideAvatarSources;
     private overrideAvatarColors;
     private calculateAsciiCode;

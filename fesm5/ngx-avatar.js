@@ -704,6 +704,7 @@ var AvatarService = /** @class */ (function () {
         this.avatarConfigService = avatarConfigService;
         this.avatarSources = defaultSources;
         this.avatarColors = defaultColors;
+        this.cache = [];
         this.overrideAvatarSources();
         this.overrideAvatarColors();
     }
@@ -768,6 +769,28 @@ var AvatarService = /** @class */ (function () {
      */
     function (sourceType) {
         return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
+    };
+    /**
+     * @param {?} source
+     * @return {?}
+     */
+    AvatarService.prototype.fetchAvatarHasFailedBefore = /**
+     * @param {?} source
+     * @return {?}
+     */
+    function (source) {
+        return this.cache.includes(source);
+    };
+    /**
+     * @param {?} source
+     * @return {?}
+     */
+    AvatarService.prototype.cacheFailedAvatar = /**
+     * @param {?} source
+     * @return {?}
+     */
+    function (source) {
+        this.cache.push(source);
     };
     /**
      * @private
@@ -1130,27 +1153,29 @@ var AvatarComponent = /** @class */ (function () {
      */
     function (source) {
         var _this = this;
-        this.avatarService
-            .fetchAvatar(source.getAvatar())
-            .pipe(takeWhile((/**
-         * @return {?}
-         */
-        function () { return _this.isAlive; })), map((/**
-         * @param {?} response
-         * @return {?}
-         */
-        function (response) { return source.processResponse(response, _this.size); })))
-            .subscribe((/**
-         * @param {?} avatarSrc
-         * @return {?}
-         */
-        function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
-         * @param {?} err
-         * @return {?}
-         */
-        function (err) {
-            console.error("ngx-avatar: error while fetching " + source.sourceType + " avatar ");
-        }));
+        if (!this.avatarService.fetchAvatarHasFailedBefore(source.sourceType)) {
+            this.avatarService
+                .fetchAvatar(source.getAvatar())
+                .pipe(takeWhile((/**
+             * @return {?}
+             */
+            function () { return _this.isAlive; })), map((/**
+             * @param {?} response
+             * @return {?}
+             */
+            function (response) { return source.processResponse(response, _this.size); })))
+                .subscribe((/**
+             * @param {?} avatarSrc
+             * @return {?}
+             */
+            function (avatarSrc) { return (_this.avatarSrc = avatarSrc); }), (/**
+             * @param {?} err
+             * @return {?}
+             */
+            function (err) {
+                _this.avatarService.cacheFailedAvatar(source.sourceType);
+            }));
+        }
     };
     /**
      * Add avatar source

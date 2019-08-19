@@ -573,6 +573,7 @@ class AvatarService {
         this.avatarConfigService = avatarConfigService;
         this.avatarSources = defaultSources;
         this.avatarColors = defaultColors;
+        this.cache = [];
         this.overrideAvatarSources();
         this.overrideAvatarColors();
     }
@@ -616,6 +617,20 @@ class AvatarService {
      */
     isTextAvatar(sourceType) {
         return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
+    }
+    /**
+     * @param {?} source
+     * @return {?}
+     */
+    fetchAvatarHasFailedBefore(source) {
+        return this.cache.includes(source);
+    }
+    /**
+     * @param {?} source
+     * @return {?}
+     */
+    cacheFailedAvatar(source) {
+        this.cache.push(source);
     }
     /**
      * @private
@@ -856,27 +871,29 @@ class AvatarComponent {
      * @return {?}
      */
     fetchAndProcessAsyncAvatar(source) {
-        this.avatarService
-            .fetchAvatar(source.getAvatar())
-            .pipe(takeWhile((/**
-         * @return {?}
-         */
-        () => this.isAlive)), map((/**
-         * @param {?} response
-         * @return {?}
-         */
-        response => source.processResponse(response, this.size))))
-            .subscribe((/**
-         * @param {?} avatarSrc
-         * @return {?}
-         */
-        avatarSrc => (this.avatarSrc = avatarSrc)), (/**
-         * @param {?} err
-         * @return {?}
-         */
-        err => {
-            console.error(`ngx-avatar: error while fetching ${source.sourceType} avatar `);
-        }));
+        if (!this.avatarService.fetchAvatarHasFailedBefore(source.sourceType)) {
+            this.avatarService
+                .fetchAvatar(source.getAvatar())
+                .pipe(takeWhile((/**
+             * @return {?}
+             */
+            () => this.isAlive)), map((/**
+             * @param {?} response
+             * @return {?}
+             */
+            response => source.processResponse(response, this.size))))
+                .subscribe((/**
+             * @param {?} avatarSrc
+             * @return {?}
+             */
+            avatarSrc => (this.avatarSrc = avatarSrc)), (/**
+             * @param {?} err
+             * @return {?}
+             */
+            err => {
+                this.avatarService.cacheFailedAvatar(source.sourceType);
+            }));
+        }
     }
     /**
      * Add avatar source
