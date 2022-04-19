@@ -1,6 +1,9 @@
-import { EventEmitter, ElementRef, OnChanges, SimpleChange, OnDestroy } from '@angular/core';
+import { EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Source } from './sources/source';
 import { SourceFactory } from './sources/source.factory';
 import { AvatarService } from './avatar.service';
+import * as i0 from "@angular/core";
+declare type Style = Partial<CSSStyleDeclaration>;
 /**
  * Universal avatar component that
  * generates avatar from different sources
@@ -10,38 +13,38 @@ import { AvatarService } from './avatar.service';
  * implements {OnChanges}
  */
 export declare class AvatarComponent implements OnChanges, OnDestroy {
-    elementRef: ElementRef;
     sourceFactory: SourceFactory;
     private avatarService;
     round: boolean;
-    size: number;
+    size: string | number;
     textSizeRatio: number;
-    bgColor: string;
+    bgColor: string | undefined;
     fgColor: string;
-    borderColor: string;
-    style: any;
-    cornerRadius: number;
-    facebook: string;
-    twitter: string;
-    google: string;
-    vkontakte: string;
-    skype: string;
-    gravatar: string;
-    github: string;
-    custom: string;
-    initials: string;
-    value: string;
-    placeholder: string;
-    initialsSize: number;
-    clickOnAvatar: EventEmitter<any>;
+    borderColor: string | undefined;
+    style: Style;
+    cornerRadius: string | number;
+    facebook?: string | null;
+    twitter?: string | null;
+    google?: string | null;
+    instagram?: string | null;
+    vkontakte?: string | null;
+    skype?: string | null;
+    gravatar?: string | null;
+    github?: string | null;
+    custom?: string | null;
+    initials?: string | null;
+    value?: string | null;
+    placeholder?: string;
+    initialsSize: string | number;
+    clickOnAvatar: EventEmitter<Source>;
     isAlive: boolean;
-    avatarSrc: string;
-    avatarText: string;
-    avatarStyle: any;
-    hostStyle: any;
-    private currentSource;
+    avatarSrc: string | null;
+    avatarText: string | null;
+    avatarStyle: Style;
+    hostStyle: Style;
+    private currentIndex;
     private sources;
-    constructor(elementRef: ElementRef, sourceFactory: SourceFactory, avatarService: AvatarService);
+    constructor(sourceFactory: SourceFactory, avatarService: AvatarService);
     onAvatarClicked(): void;
     /**
      * Detect inputs change
@@ -50,17 +53,14 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
      *
      * memberof AvatarComponent
      */
-    ngOnChanges(changes: {
-        [propKey: string]: SimpleChange;
-    }): void;
+    ngOnChanges(changes: SimpleChanges): void;
     /**
      * Fetch avatar source
      *
-     * param {any} event
-     *
      * memberOf AvatarComponent
      */
-    fetchAvatarSource(event?: any): void;
+    fetchAvatarSource(): void;
+    private findNextSource;
     ngOnDestroy(): void;
     /**
      * Initialize the avatar component and its fallback system
@@ -103,5 +103,7 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
      * param sourceType avatar source type e.g facebook,twitter, etc.
      */
     private removeSource;
-    private isSourceExist;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AvatarComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AvatarComponent, "ngx-avatar", never, { "round": "round"; "size": "size"; "textSizeRatio": "textSizeRatio"; "bgColor": "bgColor"; "fgColor": "fgColor"; "borderColor": "borderColor"; "style": "style"; "cornerRadius": "cornerRadius"; "facebook": "facebookId"; "twitter": "twitterId"; "google": "googleId"; "instagram": "instagramId"; "vkontakte": "vkontakteId"; "skype": "skypeId"; "gravatar": "gravatarId"; "github": "githubId"; "custom": "src"; "initials": "name"; "value": "value"; "placeholder": "placeholder"; "initialsSize": "initialsSize"; }, { "clickOnAvatar": "clickOnAvatar"; }, never, never>;
 }
+export {};

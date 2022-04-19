@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AvatarConfigService } from './avatar-config.service';
 import { AvatarSource } from './sources/avatar-source.enum';
+import { Source } from './sources/source';
+import * as i0 from "@angular/core";
 /**
  * list of Supported avatar sources
  */
@@ -11,10 +13,6 @@ export declare const defaultSources: AvatarSource[];
  */
 export declare const defaultColors: string[];
 /**
- * Default request cache lifetime
- */
-export declare const defaultCacheLifetimeSecond: number;
-/**
  * Provides utilities methods related to Avatar component
  */
 export declare class AvatarService {
@@ -22,18 +20,20 @@ export declare class AvatarService {
     private avatarConfigService;
     avatarSources: AvatarSource[];
     avatarColors: string[];
-    cacheLifetimeSecond: number;
-    private cache;
-    private requestCache;
+    private readonly failedSources;
     constructor(http: HttpClient, avatarConfigService: AvatarConfigService);
-    fetchAvatar(avatarUrl: string): Observable<any>;
+    fetchAvatar(avatarUrl: string): Observable<unknown>;
     getRandomColor(avatarText: string): string;
-    copmareSources(sourceType1: AvatarSource, sourceType2: AvatarSource): number;
+    compareSources(sourceType1: AvatarSource, sourceType2: AvatarSource): number;
     isSource(source: string): boolean;
     isTextAvatar(sourceType: AvatarSource): boolean;
+    private buildSourceKey;
+    sourceHasFailedBefore(source: Source): boolean;
+    markSourceAsFailed(source: Source): void;
     private overrideAvatarSources;
     private overrideAvatarColors;
-    private overrideCacheLifetime;
     private calculateAsciiCode;
     private getSourcePriority;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AvatarService, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<AvatarService>;
 }

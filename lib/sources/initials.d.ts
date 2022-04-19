@@ -1,14 +1,14 @@
 import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
 /**
- * Initials source impelementation.
- * return the initals of the given value
+ * Initials source implementation.
+ * return the initials of the given value
  */
 export declare class Initials implements Source {
     sourceId: string;
     readonly sourceType: AvatarSource;
     constructor(sourceId: string);
-    getAvatar(initialsSize: number): string;
+    getAvatar(size: number): string;
     /**
      * Returns the initial letters of a name in a string.
      */

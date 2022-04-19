@@ -7,7 +7,11 @@ export declare class Vkontakte extends AsyncSource {
     /**
      * extract vkontakte avatar from json data
      */
-    processResponse(data: any): string;
+    processResponse(data: {
+        response: {
+            [key: string]: string;
+        }[];
+    }): string | null;
     /**
      * Returns image size related to vkontakte API
      */

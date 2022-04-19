@@ -11,8 +11,4 @@ export interface AvatarConfig {
      * The order in which the avatar sources will be used.
      */
     sourcePriorityOrder?: AvatarSource[];
-    /**
-     * Avatar services request cache lifetime.
-     */
-    cacheLifetimeSecond?: number;
 }

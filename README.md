@@ -3,7 +3,7 @@
 [![Angular Style Guide](https://mgechev.github.io/angular2-style-guide/images/badge.svg)](https://angular.io/styleguide)
 ![size](https://img.shields.io/bundlephobia/minzip/ngx-avatar.svg)
 
-A universal avatar component for Angular 2+ applications that fetches / generates avatar based on the information you have about the user. The component has a fallback system that if for example an invalid Facebook ID is used it will try google ID and so on.
+A universal avatar component for Angular applications that fetches / generates avatar based on the information you have about the user. The component has a fallback system that if for example an invalid Facebook ID is used it will try google ID and so on.
 
 You can use this component whether you have a single source or a multiple avatar sources. In this case the fallback system will fetch the first valid avatar.
 
@@ -17,10 +17,11 @@ Moreover, the component can shows name initials or simple value as avatar.
  * Facebook
  * Google
  * Twitter
+ * Instagram
  * Vkontakte (VK)
  * Skype
  * Gravatar
- * Github
+ * GitHub
  * Custom image
  * name initials
  * value
@@ -33,17 +34,21 @@ Moreover, the component can shows name initials or simple value as avatar.
 
 ## Installation
 
-Install avatar component using [NPM](https://www.npmjs.com/)::
+Install avatar component using [Yarn](https://yarnpkg.com/):
+
+```bash
+$ yarn add ngx-avatar
+```
+
+or
 
 ```bash
 $ npm install ngx-avatar --save
 ```
-Or [download as ZIP](https://github.com/HaithemMosbahi/ngx-avatar/archive/master.zip).
-
 
 ## Usage
 
-1. Import AvatarModule :
+1. Import AvatarModule:
 
 Once you have installed ngx-avatar, you can import it in your `AppModule`:
 
@@ -89,6 +94,7 @@ Once the AvatarModule is imported, you can start using the component in your Ang
 <ngx-avatar facebookId="1508319875"></ngx-avatar>
 <ngx-avatar googleId="1508319875"></ngx-avatar>
 <ngx-avatar twitterId="1508319875"></ngx-avatar>
+<ngx-avatar instagramId="dccomics" size="70"></ngx-avatar>
 <ngx-avatar skypeId="1508319875"></ngx-avatar>
 <ngx-avatar gravatarId="adde9b2b981a8083cf084c63ad86f753"></ngx-avatar>
 <ngx-avatar gravatarId="user@gmail.com"></ngx-avatar>
@@ -114,7 +120,7 @@ Moreover, the demo folder contains an application generated with angular cli tha
 
 To run the demo application :
 ```bash
-$ npm install
+$ yarn install
 $ ng serve
 ```
 
@@ -122,43 +128,43 @@ $ ng serve
 
 ## Options
 
-|   Attribute   |      Type      | Default |                                              Description                                               |
-| ------------- | ----------------- | ------- | ------------------------------------------------------------------------------------------------------ |
-| `facebookId` | *string* |         | Facebook ID                                                                                                       |
-| `googleId` | *string* |         |  Google ID                                                                                                     |
-| `twitterId`   | *string*             |         | Twitter Handle                                                                                                       |
-| `vkontakteId`   | *string*             |         | VK ID|
-| `skypeId`    | *string*          |       |  Skype ID                                                                                                      |
-| `gravatarId`    | *string*          |         | email or md5 email related to gravatar                                                                                                  |
-| `githubId`    | *string*          |         | Github ID                                                                                      
-| `src`         | *string*          |         | Fallback image to use                                                                                  |
-| `name`        | *string*          |         | Will be used to generate avatar based on the initials of the person                                    |
-| `value`       | *string*          |         | Show a value as avatar                                                                                 |
-| `initialsSize`        | *number*          |   undefined      | Restricts the size of initials - it goes along with the name property and can be used to fix the number of characters that will be displayed as initials.  |
-| `bgColor`       | *string*          | random  | Give the background a fixed color with a hex like for example #FF0000 |
-| `fgColor`     | *string*          | #FFF  | Give the text a fixed color with a hex like for example #FF0000 |
-| `size`        | *number*             | 50      | Size of the avatar                                                                                     |
-| `textSizeRatio` | *number*             | 3      | For text based avatars the size of the text as a fragment of size (size / textSizeRatio)                                 |
-| `round`       | *boolean*            | true   | Round the avatar corners                                                                               |
-| `cornerRadius`       | *number*            | 0   | Square avatars can have rounded corners using this property                                                                              |
-| `borderColor`       | *string*            | undefined   | Add border with the given color. boder's default style is '1px solid borderColor'                                                                               |
-| `style`         | *object*          |         | Style that will be applied on the root element
-| `clickOnAvatar`         | *Output*          |         | Fired when the avatar is clicked. The component emits the source object that has been used to fetch the avatar.||
+|   Attribute   |      Type        | Default |                                              Description                                               |
+| ------------- | ---------------- | ------- | ------------------------------------------------------------------------------------------------------ |
+| `facebookId`  | *string \| null* |         | Facebook ID                                                                                            |
+| `googleId`    | *string \| null* |         |  Google ID                                                                                             |
+| `twitterId`   | *string \| null* |         | Twitter Handle                                                                                         |
+| `instagramId`   | *string \| null* |         | Instagram Handle                                                                                         |
+| `vkontakteId` | *string \| null* |         | VK ID                                                                                                  |
+| `skypeId`     | *string \| null* |         |  Skype ID                                                                                              |
+| `gravatarId`  | *string \| null* |         | email or md5 email related to gravatar                                                                 |
+| `githubId`    | *string \| null* |         | Github ID                                                                                              |
+| `src`         | *string \| null* |         | Fallback image to use                                                                                  |
+| `name`        | *string \| null* |         | Will be used to generate avatar based on the initials of the person                                    |
+| `value`       | *string \| null* |         | Show a value as avatar                                                                                 |
+| `initialsSize`| *number*         | 0       | Restricts the size of initials - it goes along with the name property and can be used to fix the number of characters that will be displayed as initials. The `0` means no restrictions. |
+| `bgColor`     | *string*         | random  | Give the background a fixed color with a hex like for example #FF0000                                  |
+| `fgColor`     | *string*         | #FFF    | Give the text a fixed color with a hex like for example #FF0000                                        |
+| `size`        | *number*         | 50      | Size of the avatar                                                                                     |
+| `textSizeRatio`| *number*        | 3       | For text based avatars the size of the text as a fragment of size (size / textSizeRatio)               |
+| `round`       | *boolean*        | true    | Round the avatar corners                                                                               |
+| `cornerRadius`| *number*         | 0       | Square avatars can have rounded corners using this property                                            |
+| `borderColor` | *string*         | undefined | Add border with the given color. boder's default style is '1px solid borderColor'                    |
+| `style`       | *object*         |         | Style that will be applied on the root element                                                         |
+| `clickOnAvatar`| *Output*        |         | Fired when the avatar is clicked. The component emits the source object that has been used to fetch the avatar.|
 
  The source object has the following properties:
  * sourceType : avatar source ( Facebook, twitter, etc)
  * sourceId : identifier of the user
- * getAvatar(size?) : method to fetch user avatar from the current source
+ * getAvatar(size) : method to fetch user avatar from the current source
 
 ## Override Avatar Configuration
-The avatar module provides the possibility of customizing the avatar component by overriding some of its options. For example, the avatar module comes with a set of default colors used to randomly fill the backgroud color of the avatar. Thus, it's possible to chnage the default list of colors and to pass your own list.
+The avatar module provides the possibility of customizing the avatar component by overriding some of its options. For example, the avatar module comes with a set of default colors used to randomly fill the background color of the avatar. Thus, it's possible to change the default list of colors and to pass your own list.
 
 All you need to do is to configure the AvatarModule by calling **forRoot** method. The forRoot method takes an AvatarConfig Object that contains the overridden options. 
 
 AvatarConfig interface has two properties: 
   * **avatarColors:** allows the user to override the default avatar colors by providing a new set of colors
   * **sourcePriorityOrder:** allows the user to change the avatar source priority order. If you want the avatar component to look for user initials first, twitter before facebook or any order you want, this is can be done using the sourcePriorityOrder property
-  * **cacheLifetimeSecond:** allows the user to change the avatar services request cache lifetime
 
 The following code shows an example on how to import the AvatarModule with your own source priority order. 
 With the given order, the avatar component will look first for the custom avatar image and then for user initials and after that it will look the rest of sources.
@@ -257,7 +263,7 @@ export class AppModule { }
  **Avatar Styling**
 
  In addition to the style attribute, ngx-avatar style can be customized using css classes. Thus, the generated code offers two css classes that can be overridden :
- * **avatar-container** : class that represents the avatar container - the host element. Styles in this class will be applied on the avatar wether is an image or text.
+ * **avatar-container** : class that represents the avatar container - the host element. Styles in this class will be applied on the avatar whether is an image or text.
  * **avatar-content** : css class that represents the avatar element which is embedded inside the avatar-container.
  
  To overcome Angular's view encapsulation, you may need to use the /deep/ operator to target it. Here's an example that shows how to override ngx-avatar style : 
@@ -274,32 +280,35 @@ export class AppModule { }
  ```
 
 ## Release Notes & History
+* 4.2.0: Angular 12/13 support
+* 4.1.0: Angular 11 support
+* 4.0.0: Angular 9 support and minor improvements
 * 3.6.0: Angular 8 support
 * 3.5.0: export Avatar component for Angular elements and ng upgrade
-* 3.4.0: http module is removed from the library dependencies. Applicatins' http module will be used instead.
-* 3.3.x : Bug fixes
-* 3.3.0 : Override Source priority order when importing AvatarModule
-* 3.2.0 : Add support to Angular 7
-* 3.1.1 : fixes the source priority bug 
-* 3.1 : fixes AOT / Prod build when loading avatar module with config
+* 3.4.0: http module is removed from the library dependencies. Applications' http module will be used instead.
+* 3.3.x: Bug fixes
+* 3.3.0: Override Source priority order when importing AvatarModule
+* 3.2.0: Add support to Angular 7
+* 3.1.1: fixes the source priority bug 
+* 3.1: fixes AOT / Prod build when loading avatar module with config
   * This version has a **breaking change** in the way the module with configuration is imported, for more details see Override Avatar Configuration section. 
-* 3.0 : Add support to Angular 6
+* 3.0: Add support to Angular 6
   * Build the library with Angular CLI
-* 2.9 : Bug fixes [#16](https://github.com/HaithemMosbahi/ngx-avatar/issues/16) & [#16](https://github.com/HaithemMosbahi/ngx-avatar/issues/16)
-* 2.8 : add initials size option
-* 2.7 : code refactoring
-* 2.6 : Customize avatar options
-* 2.5 : Bug fixes & new css classes
-* 2.4 : Refactor async sources
-* 2.3 : Add support for github avatar
-* 2.2 : Fix prod and aot build
-* 2.1 : Bug fixes
-* 2.0 : add support to vkontakte source
-* 1.4 : background color is now generated based on the sum of ASCII values of avatar's text.
-* 1.3 : Bug Fixes ( support dynamic avatar data )
-* 1.2 : Add border related properties.
-* 1.1 : Listen to click events on avatar and support retina display.
-* 1.0 : Avatar component that fetches / generates user avatar from different sources.
+* 2.9: Bug fixes [#16](https://github.com/HaithemMosbahi/ngx-avatar/issues/16) & [#16](https://github.com/HaithemMosbahi/ngx-avatar/issues/16)
+* 2.8: add initials size option
+* 2.7: code refactoring
+* 2.6: Customize avatar options
+* 2.5: Bug fixes & new css classes
+* 2.4: Refactor async sources
+* 2.3: Add support for github avatar
+* 2.2: Fix prod and aot build
+* 2.1: Bug fixes
+* 2.0: add support to vkontakte source
+* 1.4: background color is now generated based on the sum of ASCII values of avatar's text.
+* 1.3: Bug Fixes ( support dynamic avatar data )
+* 1.2: Add border related properties.
+* 1.1: Listen to click events on avatar and support retina display.
+* 1.0: Avatar component that fetches / generates user avatar from different sources.
 
 
 ## Contributing

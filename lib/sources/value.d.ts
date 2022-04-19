@@ -1,7 +1,7 @@
 import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
 /**
- *  Value source impelementation.
+ *  Value source implementation.
  *  return the value as avatar
  */
 export declare class Value implements Source {
