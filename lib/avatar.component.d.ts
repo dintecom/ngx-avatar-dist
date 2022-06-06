@@ -104,6 +104,6 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
      */
     private removeSource;
     static ɵfac: i0.ɵɵFactoryDeclaration<AvatarComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<AvatarComponent, "ngx-avatar", never, { "round": "round"; "size": "size"; "textSizeRatio": "textSizeRatio"; "bgColor": "bgColor"; "fgColor": "fgColor"; "borderColor": "borderColor"; "style": "style"; "cornerRadius": "cornerRadius"; "facebook": "facebookId"; "twitter": "twitterId"; "google": "googleId"; "instagram": "instagramId"; "vkontakte": "vkontakteId"; "skype": "skypeId"; "gravatar": "gravatarId"; "github": "githubId"; "custom": "src"; "initials": "name"; "value": "value"; "placeholder": "placeholder"; "initialsSize": "initialsSize"; }, { "clickOnAvatar": "clickOnAvatar"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AvatarComponent, "ngx-avatar", never, { "round": "round"; "size": "size"; "textSizeRatio": "textSizeRatio"; "bgColor": "bgColor"; "fgColor": "fgColor"; "borderColor": "borderColor"; "style": "style"; "cornerRadius": "cornerRadius"; "facebook": "facebookId"; "twitter": "twitterId"; "google": "googleId"; "instagram": "instagramId"; "vkontakte": "vkontakteId"; "skype": "skypeId"; "gravatar": "gravatarId"; "github": "githubId"; "custom": "src"; "initials": "name"; "value": "value"; "placeholder": "placeholder"; "initialsSize": "initialsSize"; }, { "clickOnAvatar": "clickOnAvatar"; }, never, never, false>;
 }
 export {};

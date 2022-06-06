@@ -1,7 +1,7 @@
 {
   "name": "ngx-avatar",
   "description": "A universal avatar component for Angular applications that fetches / generates avatar based on the information you have about the user.",
-  "version": "4.2.0",
+  "version": "14.0.0",
   "keywords": [
     "angular",
     "avatar",
@@ -19,21 +19,21 @@
     "tslib": "^2.3.1"
   },
   "peerDependencies": {
-    "@angular/common": "^13.0.1",
-    "@angular/core": "^13.0.1"
+    "@angular/common": "^14.0.0",
+    "@angular/core": "^14.0.0"
   },
   "module": "fesm2015/ngx-avatar.mjs",
   "es2020": "fesm2020/ngx-avatar.mjs",
   "esm2020": "esm2020/ngx-avatar.mjs",
   "fesm2020": "fesm2020/ngx-avatar.mjs",
   "fesm2015": "fesm2015/ngx-avatar.mjs",
-  "typings": "ngx-avatar.d.ts",
+  "typings": "index.d.ts",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
-      "types": "./ngx-avatar.d.ts",
+      "types": "./index.d.ts",
       "esm2020": "./esm2020/ngx-avatar.mjs",
       "es2020": "./fesm2020/ngx-avatar.mjs",
       "es2015": "./fesm2015/ngx-avatar.mjs",

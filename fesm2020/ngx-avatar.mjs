@@ -469,7 +469,7 @@ AvatarService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: AvatarServ
 function AvatarComponent_img_1_Template(rf, ctx) { if (rf & 1) {
     const _r4 = i0.ɵɵgetCurrentView();
     i0.ɵɵelementStart(0, "img", 3);
-    i0.ɵɵlistener("error", function AvatarComponent_img_1_Template_img_error_0_listener() { i0.ɵɵrestoreView(_r4); const ctx_r3 = i0.ɵɵnextContext(); return ctx_r3.fetchAvatarSource(); });
+    i0.ɵɵlistener("error", function AvatarComponent_img_1_Template_img_error_0_listener() { i0.ɵɵrestoreView(_r4); const ctx_r3 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r3.fetchAvatarSource()); });
     i0.ɵɵelementEnd();
 } if (rf & 2) {
     const ctx_r0 = i0.ɵɵnextContext();
@@ -701,20 +701,10 @@ AvatarComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: AvatarCompo
         i0.ɵɵproperty("ngStyle", ctx.hostStyle);
         i0.ɵɵadvance(1);
         i0.ɵɵproperty("ngIf", ctx.avatarSrc)("ngIfElse", _r1);
-    } }, directives: [i3.NgStyle, i3.NgIf], styles: ["[_nghost-%COMP%]{border-radius:50%}"] });
+    } }, dependencies: [i3.NgIf, i3.NgStyle], styles: ["[_nghost-%COMP%]{border-radius:50%}"] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarComponent, [{
         type: Component,
-        args: [{
-                // tslint:disable-next-line:component-selector
-                selector: 'ngx-avatar',
-                styles: [
-                    `
-      :host {
-        border-radius: 50%;
-      }
-    `
-                ],
-                template: `
+        args: [{ selector: 'ngx-avatar', template: `
     <div
       (click)="onAvatarClicked()"
       class="avatar-container"
@@ -736,8 +726,7 @@ AvatarComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: AvatarCompo
         </div>
       </ng-template>
     </div>
-  `
-            }]
+  `, styles: [":host{border-radius:50%}\n"] }]
     }], function () { return [{ type: SourceFactory }, { type: AvatarService }]; }, { round: [{
             type: Input
         }], size: [{
@@ -806,7 +795,7 @@ class AvatarModule {
 }
 AvatarModule.ɵfac = function AvatarModule_Factory(t) { return new (t || AvatarModule)(); };
 AvatarModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AvatarModule });
-AvatarModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SourceFactory, AvatarService, AvatarConfigService], imports: [[CommonModule]] });
+AvatarModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SourceFactory, AvatarService, AvatarConfigService], imports: [CommonModule] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarModule, [{
         type: NgModule,
         args: [{
