@@ -1,5 +1,5 @@
-import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
+import { Source } from './source';
 /**
  *  Twitter source implementation.
  *  Fetch avatar source based on google identifier

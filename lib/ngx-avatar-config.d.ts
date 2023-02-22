@@ -2,7 +2,7 @@ import { AvatarSource } from './sources/avatar-source.enum';
 /**
  * Represents avatar configuration object.
  */
-export interface AvatarConfig {
+export interface NgxAvatarConfig {
     /**
      * The avatars colors.
      */
@@ -11,4 +11,8 @@ export interface AvatarConfig {
      * The order in which the avatar sources will be used.
      */
     sourcePriorityOrder?: AvatarSource[];
+    /**
+     * Avatar services request cache lifetime.
+     */
+    cacheLifetimeSecond?: number;
 }

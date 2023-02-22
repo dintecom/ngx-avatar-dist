@@ -1,18 +1,10 @@
-import { EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { EventEmitter, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { NgxAvatarService } from './ngx-avatar.service';
 import { Source } from './sources/source';
 import { SourceFactory } from './sources/source.factory';
-import { AvatarService } from './avatar.service';
 import * as i0 from "@angular/core";
-declare type Style = Partial<CSSStyleDeclaration>;
-/**
- * Universal avatar component that
- * generates avatar from different sources
- *
- * export
- * class AvatarComponent
- * implements {OnChanges}
- */
-export declare class AvatarComponent implements OnChanges, OnDestroy {
+type Style = Partial<CSSStyleDeclaration>;
+export declare class NgxAvatarComponent implements OnChanges, OnDestroy {
     sourceFactory: SourceFactory;
     private avatarService;
     round: boolean;
@@ -44,7 +36,7 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
     hostStyle: Style;
     private currentIndex;
     private sources;
-    constructor(sourceFactory: SourceFactory, avatarService: AvatarService);
+    constructor(sourceFactory: SourceFactory, avatarService: NgxAvatarService);
     onAvatarClicked(): void;
     /**
      * Detect inputs change
@@ -103,7 +95,7 @@ export declare class AvatarComponent implements OnChanges, OnDestroy {
      * param sourceType avatar source type e.g facebook,twitter, etc.
      */
     private removeSource;
-    static ɵfac: i0.ɵɵFactoryDeclaration<AvatarComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<AvatarComponent, "ngx-avatar", never, { "round": "round"; "size": "size"; "textSizeRatio": "textSizeRatio"; "bgColor": "bgColor"; "fgColor": "fgColor"; "borderColor": "borderColor"; "style": "style"; "cornerRadius": "cornerRadius"; "facebook": "facebookId"; "twitter": "twitterId"; "google": "googleId"; "instagram": "instagramId"; "vkontakte": "vkontakteId"; "skype": "skypeId"; "gravatar": "gravatarId"; "github": "githubId"; "custom": "src"; "initials": "name"; "value": "value"; "placeholder": "placeholder"; "initialsSize": "initialsSize"; }, { "clickOnAvatar": "clickOnAvatar"; }, never, never, false>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgxAvatarComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<NgxAvatarComponent, "ngx-avatar", never, { "round": "round"; "size": "size"; "textSizeRatio": "textSizeRatio"; "bgColor": "bgColor"; "fgColor": "fgColor"; "borderColor": "borderColor"; "style": "style"; "cornerRadius": "cornerRadius"; "facebook": "facebookId"; "twitter": "twitterId"; "google": "googleId"; "instagram": "instagramId"; "vkontakte": "vkontakteId"; "skype": "skypeId"; "gravatar": "gravatarId"; "github": "githubId"; "custom": "src"; "initials": "name"; "value": "value"; "placeholder": "placeholder"; "initialsSize": "initialsSize"; }, { "clickOnAvatar": "clickOnAvatar"; }, never, never, true, never>;
 }
 export {};

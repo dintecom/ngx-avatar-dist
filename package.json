@@ -1,7 +1,7 @@
 {
   "name": "ngx-avatar",
   "description": "A universal avatar component for Angular applications that fetches / generates avatar based on the information you have about the user.",
-  "version": "14.0.0",
+  "version": "15.1.0",
   "keywords": [
     "angular",
     "avatar",
@@ -13,15 +13,15 @@
     "type": "git",
     "url": "https://github.com/HaithemMosbahi/ngx-avatar"
   },
-  "sideEffects": false,
-  "dependencies": {
-    "ts-md5": "^1.2.9",
-    "tslib": "^2.3.1"
-  },
   "peerDependencies": {
-    "@angular/common": "^14.0.0",
-    "@angular/core": "^14.0.0"
+    "@angular/common": "^15.0.0",
+    "@angular/core": "^15.0.0"
   },
+  "dependencies": {
+    "tslib": "^2.5.0",
+    "ts-md5": "^1.3.1"
+  },
+  "sideEffects": false,
   "module": "fesm2015/ngx-avatar.mjs",
   "es2020": "fesm2020/ngx-avatar.mjs",
   "esm2020": "esm2020/ngx-avatar.mjs",
@@ -40,8 +40,5 @@
       "node": "./fesm2015/ngx-avatar.mjs",
       "default": "./fesm2020/ngx-avatar.mjs"
     }
-  },
-  "scripts": {
-    "prepublishOnly": "node --eval \"console.error('ERROR: Trying to publish a package that has been compiled by Ivy in full compilation mode. This is not allowed.\\nPlease delete and rebuild the package with Ivy partial compilation mode, before attempting to publish.\\n')\" && exit 1"
   }
 }

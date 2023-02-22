@@ -1,5 +1,5 @@
-import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
+import { Source } from './source';
 /**
  * Initials source implementation.
  * return the initials of the given value

@@ -1,20 +1,53 @@
-import * as i0 from '@angular/core';
-import { Injectable, InjectionToken, Optional, Inject, EventEmitter, Component, Input, Output, NgModule } from '@angular/core';
 import * as i3 from '@angular/common';
 import { CommonModule } from '@angular/common';
+import * as i0 from '@angular/core';
+import { InjectionToken, Injectable, Optional, Inject, EventEmitter, Component, Input, Output, makeEnvironmentProviders } from '@angular/core';
 import { takeWhile, map } from 'rxjs/operators';
-import { Md5 } from 'ts-md5';
+import { throwError, of, tap, catchError, finalize, share } from 'rxjs';
 import * as i1 from '@angular/common/http';
+import { Md5 } from 'ts-md5';
 
 /**
- * Contract of all async sources.
- * Every async source must implement the processResponse method that extracts the avatar url from the data
+ * Token used to inject the AvatarConfig object
  */
-class AsyncSource {
-    constructor(sourceId) {
-        this.sourceId = sourceId;
+const NGX_AVATAR_CONFIG = new InjectionToken('ngx-avatar.config');
+
+class NgxAvatarConfigService {
+    constructor(userConfig) {
+        this.userConfig = userConfig;
+    }
+    getAvatarSources(defaultSources) {
+        if (this.userConfig && this.userConfig.sourcePriorityOrder && this.userConfig.sourcePriorityOrder.length) {
+            const uniqueSources = [...new Set(this.userConfig.sourcePriorityOrder)];
+            const validSources = uniqueSources.filter(source => defaultSources.includes(source));
+            return [...validSources, ...defaultSources.filter(source => !validSources.includes(source))];
+        }
+        return defaultSources;
+    }
+    getAvatarColors(defaultColors) {
+        return ((this.userConfig && this.userConfig.colors && this.userConfig.colors.length && this.userConfig.colors) ||
+            defaultColors);
+    }
+    getCacheLifetime(defaultLifetime) {
+        return ((this.userConfig &&
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            isFinite(this.userConfig.cacheLifetimeSecond) &&
+            this.userConfig.cacheLifetimeSecond) ||
+            defaultLifetime);
     }
 }
+NgxAvatarConfigService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarConfigService, deps: [{ token: NGX_AVATAR_CONFIG, optional: true }], target: i0.ɵɵFactoryTarget.Injectable });
+NgxAvatarConfigService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarConfigService });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarConfigService, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () {
+        return [{ type: undefined, decorators: [{
+                        type: Optional
+                    }, {
+                        type: Inject,
+                        args: [NGX_AVATAR_CONFIG]
+                    }] }];
+    } });
 
 var AvatarSource;
 (function (AvatarSource) {
@@ -32,6 +65,143 @@ var AvatarSource;
 })(AvatarSource || (AvatarSource = {}));
 
 /**
+ * list of Supported avatar sources
+ */
+const defaultSources = [
+    AvatarSource.FACEBOOK,
+    AvatarSource.GOOGLE,
+    AvatarSource.TWITTER,
+    AvatarSource.INSTAGRAM,
+    AvatarSource.VKONTAKTE,
+    AvatarSource.SKYPE,
+    AvatarSource.GRAVATAR,
+    AvatarSource.GITHUB,
+    AvatarSource.CUSTOM,
+    AvatarSource.INITIALS,
+    AvatarSource.VALUE,
+];
+/**
+ * list of default colors
+ */
+const defaultColors = ['#1abc9c', '#3498db', '#f1c40f', '#8e44ad', '#e74c3c', '#d35400', '#2c3e50', '#7f8c8d'];
+/**
+ * Default request cache lifetime
+ */
+const defaultCacheLifetimeSecond = 30 * 60;
+/**
+ * Provides utilities methods related to Avatar component
+ */
+class NgxAvatarService {
+    constructor(http, avatarConfigService) {
+        this.http = http;
+        this.avatarConfigService = avatarConfigService;
+        this.avatarSources = defaultSources;
+        this.avatarColors = defaultColors;
+        this.cacheLifetimeSecond = defaultCacheLifetimeSecond;
+        this.failedSources = new Map();
+        this.cache = new Map();
+        this.requestCache = new Map();
+        this.overrideAvatarSources();
+        this.overrideAvatarColors();
+        this.overrideCacheLifetime();
+    }
+    fetchAvatar(avatarUrl) {
+        const cached = this.cache.get(avatarUrl);
+        if (cached) {
+            return cached.error ? throwError(() => cached.error) : of(cached.data);
+        }
+        let request = this.requestCache.get(avatarUrl);
+        if (request)
+            return request;
+        request = this.http.get(avatarUrl).pipe(tap(r => {
+            this.requestCache.delete(avatarUrl);
+            this.cache.set(avatarUrl, { data: r });
+        }), catchError(e => {
+            this.requestCache.delete(avatarUrl);
+            this.cache.set(avatarUrl, { error: e });
+            return throwError(() => e);
+        }), finalize(() => {
+            setTimeout(() => this.cache.delete(avatarUrl), this.cacheLifetimeSecond * 1000);
+        }), share());
+        this.requestCache.set(avatarUrl, request);
+        return request;
+    }
+    getRandomColor(avatarText) {
+        if (!avatarText) {
+            return 'transparent';
+        }
+        const asciiCodeSum = this.calculateAsciiCode(avatarText);
+        return this.avatarColors[asciiCodeSum % this.avatarColors.length];
+    }
+    compareSources(sourceType1, sourceType2) {
+        return this.getSourcePriority(sourceType1) - this.getSourcePriority(sourceType2);
+    }
+    isSource(source) {
+        return this.avatarSources.includes(source);
+    }
+    isTextAvatar(sourceType) {
+        return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
+    }
+    buildSourceKey(source) {
+        return source.sourceType + '-' + source.sourceId;
+    }
+    sourceHasFailedBefore(source) {
+        return this.failedSources.has(this.buildSourceKey(source));
+    }
+    markSourceAsFailed(source) {
+        this.failedSources.set(this.buildSourceKey(source), source);
+    }
+    overrideAvatarSources() {
+        this.avatarSources = this.avatarConfigService.getAvatarSources(defaultSources);
+    }
+    overrideAvatarColors() {
+        this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
+    }
+    overrideCacheLifetime() {
+        this.cacheLifetimeSecond = this.avatarConfigService.getCacheLifetime(defaultCacheLifetimeSecond);
+    }
+    calculateAsciiCode(value) {
+        return value
+            .split('')
+            .map(letter => letter.charCodeAt(0))
+            .reduce((previous, current) => previous + current);
+    }
+    getSourcePriority(sourceType) {
+        return this.avatarSources.indexOf(sourceType);
+    }
+}
+NgxAvatarService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarService, deps: [{ token: i1.HttpClient }, { token: NgxAvatarConfigService }], target: i0.ɵɵFactoryTarget.Injectable });
+NgxAvatarService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarService });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarService, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () { return [{ type: i1.HttpClient }, { type: NgxAvatarConfigService }]; } });
+
+/**
+ * Contract of all async sources.
+ * Every async source must implement the processResponse method that extracts the avatar url from the data
+ */
+class AsyncSource {
+    constructor(sourceId) {
+        this.sourceId = sourceId;
+    }
+}
+
+/**
+ *  Custom source implementation.
+ *  return custom image as an avatar
+ *
+ */
+class Custom {
+    constructor(sourceId) {
+        this.sourceId = sourceId;
+        this.sourceType = AvatarSource.CUSTOM;
+    }
+    getAvatar() {
+        return this.sourceId;
+    }
+}
+
+/**
  *  Facebook source implementation.
  *  Fetch avatar source based on facebook identifier
  *  and image size
@@ -42,36 +212,30 @@ class Facebook {
         this.sourceType = AvatarSource.FACEBOOK;
     }
     getAvatar(size) {
-        return ('https://graph.facebook.com/' +
-            `${this.sourceId}/picture?width=${size}&height=${size}`);
+        return 'https://graph.facebook.com/' + `${this.sourceId}/picture?width=${size}&height=${size}`;
     }
 }
 
 /**
- *  Twitter source implementation.
- *  Fetch avatar source based on google identifier
- *  and image size
+ *  GitHub source implementation.
+ *  Fetch avatar source based on github identifier
  */
-class Twitter {
+class Github extends AsyncSource {
     constructor(sourceId) {
-        this.sourceId = sourceId;
-        this.sourceType = AvatarSource.TWITTER;
+        super(sourceId);
+        this.sourceType = AvatarSource.GITHUB;
     }
-    getAvatar(size) {
-        const twitterImgSize = this.getImageSize(size);
-        return `https://twitter.com/${this.sourceId}/profile_image?size=${twitterImgSize}`;
+    getAvatar() {
+        return `https://api.github.com/users/${this.sourceId}`;
     }
-    getImageSize(size) {
-        if (size <= 24) {
-            return 'mini';
+    /**
+     * extract github avatar from json data
+     */
+    processResponse(data, size) {
+        if (size) {
+            return `${data.avatar_url}&s=${size}`;
         }
-        if (size <= 48) {
-            return 'normal';
-        }
-        if (size <= 73) {
-            return 'bigger';
-        }
-        return 'original';
+        return data.avatar_url;
     }
 }
 
@@ -100,38 +264,31 @@ class Google extends AsyncSource {
     }
 }
 
-/**
- *  Instagram source impelementation.
- *  Fetch avatar source based on instagram identifier
- */
-class Instagram extends AsyncSource {
-    constructor(sourceId) {
-        super(sourceId);
-        this.sourceType = AvatarSource.INSTAGRAM;
+function isRetina() {
+    if (typeof window !== 'undefined' && window !== null) {
+        if (window.devicePixelRatio > 1.25) {
+            return true;
+        }
+        const mediaQuery = '(-webkit-min-device-pixel-ratio: 1.25), (min--moz-device-pixel-ratio: 1.25), (-o-min-device-pixel-ratio: 5/4), (min-resolution: 1.25dppx)';
+        if (window.matchMedia && window.matchMedia(mediaQuery).matches) {
+            return true;
+        }
     }
-    getAvatar() {
-        return `https://www.instagram.com/${this.sourceId}/?__a=1`;
-    }
-    /**
-     * extract instagram avatar from json data
-     */
-    processResponse(data, size) {
-        return `${data.graphql.user.profile_pic_url_hd}&s=${size}`;
-    }
+    return false;
 }
-
 /**
- *  Custom source implementation.
- *  return custom image as an avatar
- *
+ *  Gravatar source implementation.
+ *  Fetch avatar source based on gravatar email
  */
-class Custom {
-    constructor(sourceId) {
-        this.sourceId = sourceId;
-        this.sourceType = AvatarSource.CUSTOM;
+class Gravatar {
+    constructor(value) {
+        this.value = value;
+        this.sourceType = AvatarSource.GRAVATAR;
+        this.sourceId = value.match('^[a-f0-9]{32}$') ? value : Md5.hashStr(value).toString();
     }
-    getAvatar() {
-        return this.sourceId;
+    getAvatar(size) {
+        const avatarSize = isRetina() ? size * 2 : size;
+        return `https://secure.gravatar.com/avatar/${this.sourceId}?s=${avatarSize}&d=404`;
     }
 }
 
@@ -177,33 +334,23 @@ class Initials {
     }
 }
 
-function isRetina() {
-    if (typeof window !== 'undefined' && window !== null) {
-        if (window.devicePixelRatio > 1.25) {
-            return true;
-        }
-        const mediaQuery = '(-webkit-min-device-pixel-ratio: 1.25), (min--moz-device-pixel-ratio: 1.25), (-o-min-device-pixel-ratio: 5/4), (min-resolution: 1.25dppx)';
-        if (window.matchMedia && window.matchMedia(mediaQuery).matches) {
-            return true;
-        }
-    }
-    return false;
-}
 /**
- *  Gravatar source implementation.
- *  Fetch avatar source based on gravatar email
+ *  Instagram source implementation.
+ *  Fetch avatar source based on instagram identifier
  */
-class Gravatar {
-    constructor(value) {
-        this.value = value;
-        this.sourceType = AvatarSource.GRAVATAR;
-        this.sourceId = value.match('^[a-f0-9]{32}$')
-            ? value
-            : Md5.hashStr(value).toString();
+class Instagram extends AsyncSource {
+    constructor(sourceId) {
+        super(sourceId);
+        this.sourceType = AvatarSource.INSTAGRAM;
     }
-    getAvatar(size) {
-        const avatarSize = isRetina() ? size * 2 : size;
-        return `https://secure.gravatar.com/avatar/${this.sourceId}?s=${avatarSize}&d=404`;
+    getAvatar() {
+        return `https://www.instagram.com/${this.sourceId}/?__a=1`;
+    }
+    /**
+     * extract instagram avatar from json data
+     */
+    processResponse(data, size) {
+        return `${data.graphql.user.profile_pic_url_hd}&s=${size}`;
     }
 }
 
@@ -218,6 +365,34 @@ class Skype {
     }
     getAvatar() {
         return `https://api.skype.com/users/${this.sourceId}/profile/avatar`;
+    }
+}
+
+/**
+ *  Twitter source implementation.
+ *  Fetch avatar source based on google identifier
+ *  and image size
+ */
+class Twitter {
+    constructor(sourceId) {
+        this.sourceId = sourceId;
+        this.sourceType = AvatarSource.TWITTER;
+    }
+    getAvatar(size) {
+        const twitterImgSize = this.getImageSize(size);
+        return `https://twitter.com/${this.sourceId}/profile_image?size=${twitterImgSize}`;
+    }
+    getImageSize(size) {
+        if (size <= 24) {
+            return 'mini';
+        }
+        if (size <= 48) {
+            return 'normal';
+        }
+        if (size <= 73) {
+            return 'bigger';
+        }
+        return 'original';
     }
 }
 
@@ -281,29 +456,6 @@ class Vkontakte extends AsyncSource {
 }
 
 /**
- *  GitHub source implementation.
- *  Fetch avatar source based on github identifier
- */
-class Github extends AsyncSource {
-    constructor(sourceId) {
-        super(sourceId);
-        this.sourceType = AvatarSource.GITHUB;
-    }
-    getAvatar() {
-        return `https://api.github.com/users/${this.sourceId}`;
-    }
-    /**
-     * extract github avatar from json data
-     */
-    processResponse(data, size) {
-        if (size) {
-            return `${data.avatar_url}&s=${size}`;
-        }
-        return data.avatar_url;
-    }
-}
-
-/**
  * Factory class that implements factory method pattern.
  * Used to create Source implementation class based
  * on the source Type
@@ -327,196 +479,13 @@ class SourceFactory {
         return new this.sources[sourceType](sourceValue);
     }
 }
-SourceFactory.ɵfac = function SourceFactory_Factory(t) { return new (t || SourceFactory)(); };
-SourceFactory.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SourceFactory, factory: SourceFactory.ɵfac });
-(function () {
-    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SourceFactory, [{
+SourceFactory.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: SourceFactory, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+SourceFactory.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: SourceFactory });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: SourceFactory, decorators: [{
             type: Injectable
-        }], function () { return []; }, null);
-})();
+        }], ctorParameters: function () { return []; } });
 
-/**
- * Token used to inject the AvatarConfig object
- */
-const AVATAR_CONFIG = new InjectionToken('avatar.config');
-
-class AvatarConfigService {
-    constructor(userConfig) {
-        this.userConfig = userConfig;
-    }
-    getAvatarSources(defaultSources) {
-        if (this.userConfig &&
-            this.userConfig.sourcePriorityOrder &&
-            this.userConfig.sourcePriorityOrder.length) {
-            const uniqueSources = [...new Set(this.userConfig.sourcePriorityOrder)];
-            const validSources = uniqueSources.filter(source => defaultSources.includes(source));
-            return [
-                ...validSources,
-                ...defaultSources.filter(source => !validSources.includes(source))
-            ];
-        }
-        return defaultSources;
-    }
-    getAvatarColors(defaultColors) {
-        return ((this.userConfig &&
-            this.userConfig.colors &&
-            this.userConfig.colors.length &&
-            this.userConfig.colors) ||
-            defaultColors);
-    }
-}
-AvatarConfigService.ɵfac = function AvatarConfigService_Factory(t) { return new (t || AvatarConfigService)(i0.ɵɵinject(AVATAR_CONFIG, 8)); };
-AvatarConfigService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: AvatarConfigService, factory: AvatarConfigService.ɵfac });
-(function () {
-    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarConfigService, [{
-            type: Injectable
-        }], function () {
-        return [{ type: undefined, decorators: [{
-                        type: Optional
-                    }, {
-                        type: Inject,
-                        args: [AVATAR_CONFIG]
-                    }] }];
-    }, null);
-})();
-
-/**
- * list of Supported avatar sources
- */
-const defaultSources = [
-    AvatarSource.FACEBOOK,
-    AvatarSource.GOOGLE,
-    AvatarSource.TWITTER,
-    AvatarSource.INSTAGRAM,
-    AvatarSource.VKONTAKTE,
-    AvatarSource.SKYPE,
-    AvatarSource.GRAVATAR,
-    AvatarSource.GITHUB,
-    AvatarSource.CUSTOM,
-    AvatarSource.INITIALS,
-    AvatarSource.VALUE
-];
-/**
- * list of default colors
- */
-const defaultColors = [
-    '#1abc9c',
-    '#3498db',
-    '#f1c40f',
-    '#8e44ad',
-    '#e74c3c',
-    '#d35400',
-    '#2c3e50',
-    '#7f8c8d'
-];
-/**
- * Provides utilities methods related to Avatar component
- */
-class AvatarService {
-    constructor(http, avatarConfigService) {
-        this.http = http;
-        this.avatarConfigService = avatarConfigService;
-        this.avatarSources = defaultSources;
-        this.avatarColors = defaultColors;
-        this.failedSources = new Map();
-        this.overrideAvatarSources();
-        this.overrideAvatarColors();
-    }
-    fetchAvatar(avatarUrl) {
-        return this.http.get(avatarUrl);
-    }
-    getRandomColor(avatarText) {
-        if (!avatarText) {
-            return 'transparent';
-        }
-        const asciiCodeSum = this.calculateAsciiCode(avatarText);
-        return this.avatarColors[asciiCodeSum % this.avatarColors.length];
-    }
-    compareSources(sourceType1, sourceType2) {
-        return (this.getSourcePriority(sourceType1) - this.getSourcePriority(sourceType2));
-    }
-    isSource(source) {
-        return this.avatarSources.includes(source);
-    }
-    isTextAvatar(sourceType) {
-        return [AvatarSource.INITIALS, AvatarSource.VALUE].includes(sourceType);
-    }
-    buildSourceKey(source) {
-        return source.sourceType + '-' + source.sourceId;
-    }
-    sourceHasFailedBefore(source) {
-        return this.failedSources.has(this.buildSourceKey(source));
-    }
-    markSourceAsFailed(source) {
-        this.failedSources.set(this.buildSourceKey(source), source);
-    }
-    overrideAvatarSources() {
-        this.avatarSources = this.avatarConfigService.getAvatarSources(defaultSources);
-    }
-    overrideAvatarColors() {
-        this.avatarColors = this.avatarConfigService.getAvatarColors(defaultColors);
-    }
-    calculateAsciiCode(value) {
-        return value
-            .split('')
-            .map(letter => letter.charCodeAt(0))
-            .reduce((previous, current) => previous + current);
-    }
-    getSourcePriority(sourceType) {
-        return this.avatarSources.indexOf(sourceType);
-    }
-}
-AvatarService.ɵfac = function AvatarService_Factory(t) { return new (t || AvatarService)(i0.ɵɵinject(i1.HttpClient), i0.ɵɵinject(AvatarConfigService)); };
-AvatarService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: AvatarService, factory: AvatarService.ɵfac });
-(function () {
-    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarService, [{
-            type: Injectable
-        }], function () { return [{ type: i1.HttpClient }, { type: AvatarConfigService }]; }, null);
-})();
-
-function AvatarComponent_img_1_Template(rf, ctx) {
-    if (rf & 1) {
-        const _r4 = i0.ɵɵgetCurrentView();
-        i0.ɵɵelementStart(0, "img", 3);
-        i0.ɵɵlistener("error", function AvatarComponent_img_1_Template_img_error_0_listener() { i0.ɵɵrestoreView(_r4); const ctx_r3 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r3.fetchAvatarSource()); });
-        i0.ɵɵelementEnd();
-    }
-    if (rf & 2) {
-        const ctx_r0 = i0.ɵɵnextContext();
-        i0.ɵɵproperty("src", ctx_r0.avatarSrc, i0.ɵɵsanitizeUrl)("width", ctx_r0.size)("height", ctx_r0.size)("ngStyle", ctx_r0.avatarStyle);
-    }
-}
-function AvatarComponent_ng_template_2_div_0_Template(rf, ctx) {
-    if (rf & 1) {
-        i0.ɵɵelementStart(0, "div", 5);
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-    }
-    if (rf & 2) {
-        const ctx_r5 = i0.ɵɵnextContext(2);
-        i0.ɵɵproperty("ngStyle", ctx_r5.avatarStyle);
-        i0.ɵɵadvance(1);
-        i0.ɵɵtextInterpolate1(" ", ctx_r5.avatarText, " ");
-    }
-}
-function AvatarComponent_ng_template_2_Template(rf, ctx) {
-    if (rf & 1) {
-        i0.ɵɵtemplate(0, AvatarComponent_ng_template_2_div_0_Template, 2, 2, "div", 4);
-    }
-    if (rf & 2) {
-        const ctx_r2 = i0.ɵɵnextContext();
-        i0.ɵɵproperty("ngIf", ctx_r2.avatarText);
-    }
-}
-/**
- * Universal avatar component that
- * generates avatar from different sources
- *
- * export
- * class AvatarComponent
- * implements {OnChanges}
- */
-class AvatarComponent {
+class NgxAvatarComponent {
     constructor(sourceFactory, avatarService) {
         this.sourceFactory = sourceFactory;
         this.avatarService = avatarService;
@@ -607,7 +576,7 @@ class AvatarComponent {
             this.fetchAvatarSource();
             this.hostStyle = {
                 width: this.size + 'px',
-                height: this.size + 'px'
+                height: this.size + 'px',
             };
         }
     }
@@ -634,10 +603,7 @@ class AvatarComponent {
      * memberOf AvatarComponent
      */
     getInitialsStyle(avatarValue) {
-        return Object.assign({ textAlign: 'center', borderRadius: this.round ? '100%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', textTransform: 'uppercase', color: this.fgColor, backgroundColor: this.bgColor
-                ? this.bgColor
-                : this.avatarService.getRandomColor(avatarValue), font: Math.floor(+this.size / this.textSizeRatio) +
-                'px Helvetica, Arial, sans-serif', lineHeight: this.size + 'px' }, this.style);
+        return Object.assign({ textAlign: 'center', borderRadius: this.round ? '100%' : this.cornerRadius + 'px', border: this.borderColor ? '1px solid ' + this.borderColor : '', textTransform: 'uppercase', color: this.fgColor, backgroundColor: this.bgColor ? this.bgColor : this.avatarService.getRandomColor(avatarValue), font: Math.floor(+this.size / this.textSizeRatio) + 'px Helvetica, Arial, sans-serif', lineHeight: this.size + 'px' }, this.style);
     }
     /**
      *
@@ -661,8 +627,9 @@ class AvatarComponent {
         this.avatarService
             .fetchAvatar(source.getAvatar(+this.size))
             .pipe(takeWhile(() => this.isAlive), map(response => source.processResponse(response, +this.size)))
-            .subscribe(avatarSrc => (this.avatarSrc = avatarSrc), err => {
-            this.fetchAvatarSource();
+            .subscribe({
+            next: avatarSrc => (this.avatarSrc = avatarSrc),
+            error: () => this.fetchAvatarSource(),
         });
     }
     /**
@@ -689,31 +656,9 @@ class AvatarComponent {
         this.sources = this.sources.filter(source => source.sourceType !== sourceType);
     }
 }
-AvatarComponent.ɵfac = function AvatarComponent_Factory(t) { return new (t || AvatarComponent)(i0.ɵɵdirectiveInject(SourceFactory), i0.ɵɵdirectiveInject(AvatarService)); };
-AvatarComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: AvatarComponent, selectors: [["ngx-avatar"]], inputs: { round: "round", size: "size", textSizeRatio: "textSizeRatio", bgColor: "bgColor", fgColor: "fgColor", borderColor: "borderColor", style: "style", cornerRadius: "cornerRadius", facebook: ["facebookId", "facebook"], twitter: ["twitterId", "twitter"], google: ["googleId", "google"], instagram: ["instagramId", "instagram"], vkontakte: ["vkontakteId", "vkontakte"], skype: ["skypeId", "skype"], gravatar: ["gravatarId", "gravatar"], github: ["githubId", "github"], custom: ["src", "custom"], initials: ["name", "initials"], value: "value", placeholder: "placeholder", initialsSize: "initialsSize" }, outputs: { clickOnAvatar: "clickOnAvatar" }, features: [i0.ɵɵNgOnChangesFeature], decls: 4, vars: 3, consts: [[1, "avatar-container", 3, "ngStyle", "click"], ["class", "avatar-content", "loading", "lazy", 3, "src", "width", "height", "ngStyle", "error", 4, "ngIf", "ngIfElse"], ["textAvatar", ""], ["loading", "lazy", 1, "avatar-content", 3, "src", "width", "height", "ngStyle", "error"], ["class", "avatar-content", 3, "ngStyle", 4, "ngIf"], [1, "avatar-content", 3, "ngStyle"]], template: function AvatarComponent_Template(rf, ctx) {
-        if (rf & 1) {
-            i0.ɵɵelementStart(0, "div", 0);
-            i0.ɵɵlistener("click", function AvatarComponent_Template_div_click_0_listener() { return ctx.onAvatarClicked(); });
-            i0.ɵɵtemplate(1, AvatarComponent_img_1_Template, 1, 4, "img", 1);
-            i0.ɵɵtemplate(2, AvatarComponent_ng_template_2_Template, 1, 1, "ng-template", null, 2, i0.ɵɵtemplateRefExtractor);
-            i0.ɵɵelementEnd();
-        }
-        if (rf & 2) {
-            const _r1 = i0.ɵɵreference(3);
-            i0.ɵɵproperty("ngStyle", ctx.hostStyle);
-            i0.ɵɵadvance(1);
-            i0.ɵɵproperty("ngIf", ctx.avatarSrc)("ngIfElse", _r1);
-        }
-    }, dependencies: [i3.NgIf, i3.NgStyle], styles: ["[_nghost-%COMP%]{border-radius:50%}"] });
-(function () {
-    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarComponent, [{
-            type: Component,
-            args: [{ selector: 'ngx-avatar', template: `
-    <div
-      (click)="onAvatarClicked()"
-      class="avatar-container"
-      [ngStyle]="hostStyle"
-    >
+NgxAvatarComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarComponent, deps: [{ token: SourceFactory }, { token: NgxAvatarService }], target: i0.ɵɵFactoryTarget.Component });
+NgxAvatarComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "15.1.5", type: NgxAvatarComponent, isStandalone: true, selector: "ngx-avatar", inputs: { round: "round", size: "size", textSizeRatio: "textSizeRatio", bgColor: "bgColor", fgColor: "fgColor", borderColor: "borderColor", style: "style", cornerRadius: "cornerRadius", facebook: ["facebookId", "facebook"], twitter: ["twitterId", "twitter"], google: ["googleId", "google"], instagram: ["instagramId", "instagram"], vkontakte: ["vkontakteId", "vkontakte"], skype: ["skypeId", "skype"], gravatar: ["gravatarId", "gravatar"], github: ["githubId", "github"], custom: ["src", "custom"], initials: ["name", "initials"], value: "value", placeholder: "placeholder", initialsSize: "initialsSize" }, outputs: { clickOnAvatar: "clickOnAvatar" }, providers: [SourceFactory, NgxAvatarService, NgxAvatarConfigService], usesOnChanges: true, ngImport: i0, template: `
+    <div (click)="onAvatarClicked()" class="avatar-container" [ngStyle]="hostStyle">
       <img
         *ngIf="avatarSrc; else textAvatar"
         [src]="avatarSrc"
@@ -730,8 +675,29 @@ AvatarComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: AvatarCompo
         </div>
       </ng-template>
     </div>
-  `, styles: [":host{border-radius:50%}\n"] }]
-        }], function () { return [{ type: SourceFactory }, { type: AvatarService }]; }, { round: [{
+  `, isInline: true, styles: [":host{border-radius:50%}\n"], dependencies: [{ kind: "ngmodule", type: CommonModule }, { kind: "directive", type: i3.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "directive", type: i3.NgStyle, selector: "[ngStyle]", inputs: ["ngStyle"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.5", ngImport: i0, type: NgxAvatarComponent, decorators: [{
+            type: Component,
+            args: [{ standalone: true, selector: 'ngx-avatar', template: `
+    <div (click)="onAvatarClicked()" class="avatar-container" [ngStyle]="hostStyle">
+      <img
+        *ngIf="avatarSrc; else textAvatar"
+        [src]="avatarSrc"
+        [width]="size"
+        [height]="size"
+        [ngStyle]="avatarStyle"
+        (error)="fetchAvatarSource()"
+        class="avatar-content"
+        loading="lazy"
+      />
+      <ng-template #textAvatar>
+        <div *ngIf="avatarText" class="avatar-content" [ngStyle]="avatarStyle">
+          {{ avatarText }}
+        </div>
+      </ng-template>
+    </div>
+  `, imports: [CommonModule], providers: [SourceFactory, NgxAvatarService, NgxAvatarConfigService], styles: [":host{border-radius:50%}\n"] }]
+        }], ctorParameters: function () { return [{ type: SourceFactory }, { type: NgxAvatarService }]; }, propDecorators: { round: [{
                 type: Input
             }], size: [{
                 type: Input
@@ -785,34 +751,16 @@ AvatarComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: AvatarCompo
                 type: Input
             }], clickOnAvatar: [{
                 type: Output
-            }] });
-})();
+            }] } });
 
-class AvatarModule {
-    static forRoot(avatarConfig) {
-        return {
-            ngModule: AvatarModule,
-            providers: [
-                { provide: AVATAR_CONFIG, useValue: avatarConfig ? avatarConfig : {} }
-            ]
-        };
-    }
+function provideEnvironmentNgxAvatar(avatarConfig) {
+    return makeEnvironmentProviders([
+        {
+            provide: NGX_AVATAR_CONFIG,
+            useValue: avatarConfig ? avatarConfig : {},
+        },
+    ]);
 }
-AvatarModule.ɵfac = function AvatarModule_Factory(t) { return new (t || AvatarModule)(); };
-AvatarModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AvatarModule });
-AvatarModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SourceFactory, AvatarService, AvatarConfigService], imports: [CommonModule] });
-(function () {
-    (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AvatarModule, [{
-            type: NgModule,
-            args: [{
-                    imports: [CommonModule],
-                    declarations: [AvatarComponent],
-                    providers: [SourceFactory, AvatarService, AvatarConfigService],
-                    exports: [AvatarComponent]
-                }]
-        }], null, null);
-})();
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AvatarModule, { declarations: [AvatarComponent], imports: [CommonModule], exports: [AvatarComponent] }); })();
 
 /*
  * Public API Surface of ngx-avatar
@@ -822,5 +770,5 @@ AvatarModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SourceFac
  * Generated bundle index. Do not edit.
  */
 
-export { AvatarComponent, AvatarModule, AvatarService, AvatarSource, defaultColors, defaultSources };
+export { AvatarSource, NgxAvatarComponent, NgxAvatarService, defaultCacheLifetimeSecond, defaultColors, defaultSources, provideEnvironmentNgxAvatar };
 //# sourceMappingURL=ngx-avatar.mjs.map

@@ -1,5 +1,5 @@
-import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
+import { Source } from './source';
 /**
  *  Facebook source implementation.
  *  Fetch avatar source based on facebook identifier

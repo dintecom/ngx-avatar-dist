@@ -1,5 +1,5 @@
-import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
+import { Source } from './source';
 /**
  *  Custom source implementation.
  *  return custom image as an avatar

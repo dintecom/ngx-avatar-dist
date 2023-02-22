@@ -1,5 +1,5 @@
-import { Source } from './source';
 import { AvatarSource } from './avatar-source.enum';
+import { Source } from './source';
 import * as i0 from "@angular/core";
 /**
  * Factory class that implements factory method pattern.
