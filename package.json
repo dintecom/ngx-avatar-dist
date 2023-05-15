@@ -1,7 +1,7 @@
 {
   "name": "ngx-avatar",
   "description": "A universal avatar component for Angular applications that fetches / generates avatar based on the information you have about the user.",
-  "version": "15.1.0",
+  "version": "16.0.0",
   "keywords": [
     "angular",
     "avatar",
@@ -14,19 +14,15 @@
     "url": "https://github.com/HaithemMosbahi/ngx-avatar"
   },
   "peerDependencies": {
-    "@angular/common": "^15.0.0",
-    "@angular/core": "^15.0.0"
+    "@angular/common": "^16.0.0",
+    "@angular/core": "^16.0.0"
   },
   "dependencies": {
     "tslib": "^2.5.0",
     "ts-md5": "^1.3.1"
   },
   "sideEffects": false,
-  "module": "fesm2015/ngx-avatar.mjs",
-  "es2020": "fesm2020/ngx-avatar.mjs",
-  "esm2020": "esm2020/ngx-avatar.mjs",
-  "fesm2020": "fesm2020/ngx-avatar.mjs",
-  "fesm2015": "fesm2015/ngx-avatar.mjs",
+  "module": "fesm2022/ngx-avatar.mjs",
   "typings": "index.d.ts",
   "exports": {
     "./package.json": {
@@ -34,11 +30,9 @@
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2020": "./esm2020/ngx-avatar.mjs",
-      "es2020": "./fesm2020/ngx-avatar.mjs",
-      "es2015": "./fesm2015/ngx-avatar.mjs",
-      "node": "./fesm2015/ngx-avatar.mjs",
-      "default": "./fesm2020/ngx-avatar.mjs"
+      "esm2022": "./esm2022/ngx-avatar.mjs",
+      "esm": "./esm2022/ngx-avatar.mjs",
+      "default": "./fesm2022/ngx-avatar.mjs"
     }
   }
 }
