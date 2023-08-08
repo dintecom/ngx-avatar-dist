@@ -310,7 +310,7 @@ class Initials {
         if (!name) {
             return '';
         }
-        const initials = name.split(' ');
+        const initials = name.split(/[^{\p{L}}{0-9}]+/u);
         if (size && size < initials.length) {
             return this.constructInitials(initials.slice(0, size));
         }
